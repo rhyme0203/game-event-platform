@@ -527,54 +527,33 @@
           <i>📊</i>
           대시보드
         </a>
-        <a href="#" class="nav-item">
-          <i>🎨</i>
-          디자인 모드
+        <a href="#" class="nav-item" onclick="openGameManager('roulette')">
+          <i>🎡</i>
+          룰렛 관리
         </a>
-        <a href="#" class="nav-item">
+        <a href="#" class="nav-item" onclick="openGameManager('slot')">
+          <i>🎰</i>
+          슬롯머신 관리
+        </a>
+        <a href="#" class="nav-item" onclick="openGameManager('capsule')">
+          <i>🎁</i>
+          캡슐뽑기 관리
+        </a>
+        <a href="#" class="nav-item" onclick="openGameManager('scratch')">
+          <i>🎫</i>
+          스크래치 관리
+        </a>
+        <a href="#" class="nav-item" onclick="openUserManager()">
           <i>👥</i>
           사용자 관리
-          <span class="nav-arrow">▶</span>
         </a>
-        <a href="#" class="nav-item">
-          <i>🛒</i>
-          쇼핑
-          <span class="nav-badge">2</span>
-          <span class="nav-arrow">▶</span>
-        </a>
-        <a href="#" class="nav-item">
-          <i>📅</i>
-          예약
-        </a>
-        <a href="#" class="nav-item">
-          <i>📝</i>
-          컨텐츠 관리
-        </a>
-        <a href="#" class="nav-item">
-          <i>📱</i>
-          App 신청 및 관리
-        </a>
-        <a href="#" class="nav-item">
+        <a href="#" class="nav-item" onclick="openAnalytics()">
           <i>📈</i>
-          통계
+          통계 & 분석
         </a>
-        <a href="#" class="nav-item">
+        <a href="#" class="nav-item" onclick="openSettings()">
           <i>⚙️</i>
-          환경설정
-          <span class="nav-arrow">▶</span>
-        </a>
-        <a href="#" class="nav-item">
-          <i>🎮</i>
-          게임 관리
-          <span class="nav-arrow">▶</span>
-        </a>
-        <a href="#" class="nav-item">
-          <i>💬</i>
-          고객지원
-        </a>
-        <a href="#" class="nav-item">
-          <i>⬆️</i>
-          업그레이드
+          시스템 설정
         </a>
       </nav>
       <div style="position: absolute; bottom: 20px; left: 20px; right: 20px;">
@@ -844,15 +823,77 @@
     </div>
   </div>
 
+  <!-- 데이터베이스 및 API 스크립트 -->
+  <script src="database.js"></script>
+  <script src="api.js"></script>
+  
   <script>
     // 사이드바 토글 (모바일용)
     function toggleSidebar() {
       document.querySelector('.sidebar').classList.toggle('open');
     }
 
+    // 게임 관리 페이지 열기
+    function openGameManager(gameType) {
+      window.location.href = `game-manager.html?game=${gameType}`;
+    }
+
+    // 사용자 관리
+    function openUserManager() {
+      alert('사용자 관리 기능은 준비 중입니다.');
+    }
+
+    // 분석 & 리포트
+    function openAnalytics() {
+      alert('분석 & 리포트 기능은 준비 중입니다.');
+    }
+
+    // 시스템 설정
+    function openSettings() {
+      alert('시스템 설정 기능은 준비 중입니다.');
+    }
+
+    // 통계 데이터 로드
+    async function loadStatistics() {
+      try {
+        const response = await window.adminAPI.getStatistics();
+        if (response.success) {
+          const stats = response.data;
+          document.getElementById('totalUsers').textContent = stats.totalUsers.toLocaleString();
+          document.getElementById('todayPlays').textContent = stats.todayPlays.toLocaleString();
+          document.getElementById('totalPrizes').textContent = stats.totalPrizes.toLocaleString();
+          document.getElementById('revenue').textContent = '₩' + stats.revenue.toLocaleString();
+        }
+      } catch (error) {
+        console.error('통계 로드 실패:', error);
+      }
+    }
+
+    // 실시간 통계 업데이트
+    async function updateRealTimeStats() {
+      try {
+        const response = await window.adminAPI.updateRealTimeStats();
+        if (response.success) {
+          const stats = response.data;
+          document.getElementById('totalUsers').textContent = stats.totalUsers.toLocaleString();
+          document.getElementById('todayPlays').textContent = stats.todayPlays.toLocaleString();
+          document.getElementById('totalPrizes').textContent = stats.totalPrizes.toLocaleString();
+          document.getElementById('revenue').textContent = '₩' + stats.revenue.toLocaleString();
+        }
+      } catch (error) {
+        console.error('실시간 통계 업데이트 실패:', error);
+      }
+    }
+
     // 페이지 로드 시 초기화
-    window.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('DOMContentLoaded', async function() {
       console.log('관리자 대시보드 로드됨');
+      
+      // 통계 데이터 로드
+      await loadStatistics();
+      
+      // 30초마다 실시간 통계 업데이트
+      setInterval(updateRealTimeStats, 30000);
     });
   </script>
 </body>

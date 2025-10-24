@@ -352,6 +352,10 @@
     <button class="save-btn" onclick="saveSettings()">💾 설정 저장</button>
   </div>
 
+  <!-- 데이터베이스 및 API 스크립트 -->
+  <script src="database.js"></script>
+  <script src="api.js"></script>
+  
   <script>
     let currentGame = 'roulette';
 
@@ -379,6 +383,9 @@
         'scratch': '🎫 스크래치 관리'
       };
       document.getElementById('gameTitle').textContent = titles[gameType];
+      
+      // 게임 설정 로드
+      loadGameSettings(gameType);
     }
 
     // 경품 추가
@@ -425,37 +432,129 @@
       button.parentElement.remove();
     }
 
-    // 설정 저장
-    function saveSettings() {
-      const settings = {
-        game: currentGame,
-        timestamp: new Date().toISOString()
-      };
-
-      // 게임별 설정 수집
-      if (currentGame === 'roulette') {
-        settings.attempts = document.getElementById('roulette-attempts').value;
-        settings.spinDuration = document.getElementById('roulette-spin-duration').value;
-        settings.prizes = collectPrizes('roulette');
-      } else if (currentGame === 'slot') {
-        settings.symbols = document.getElementById('slot-symbols').value;
-        settings.spinDuration = document.getElementById('slot-spin-duration').value;
-        settings.combinations = collectPrizes('slot');
-      } else if (currentGame === 'capsule') {
-        settings.capsuleCount = document.getElementById('capsule-count').value;
-        settings.animationDuration = document.getElementById('capsule-animation').value;
-        settings.prizes = collectPrizes('capsule');
-      } else if (currentGame === 'scratch') {
-        settings.revealPercent = document.getElementById('scratch-reveal-percent').value;
-        settings.adTrigger = document.getElementById('scratch-ad-trigger').value;
-        settings.prizes = collectPrizes('scratch');
+    // 게임 설정 로드
+    async function loadGameSettings(gameType) {
+      try {
+        const response = await window.adminAPI.getGameSettings(gameType);
+        if (response.success) {
+          const settings = response.data;
+          populateGameSettings(gameType, settings);
+        }
+      } catch (error) {
+        console.error('게임 설정 로드 실패:', error);
       }
+    }
 
-      // 로컬스토리지에 저장 (실제로는 서버에 전송)
-      localStorage.setItem(`gameSettings_${currentGame}`, JSON.stringify(settings));
-      
-      alert(`${currentGame} 설정이 저장되었습니다!`);
-      console.log('저장된 설정:', settings);
+    // 게임 설정 폼에 데이터 채우기
+    function populateGameSettings(gameType, settings) {
+      if (gameType === 'roulette') {
+        document.getElementById('roulette-attempts').value = settings.attempts || 3;
+        document.getElementById('roulette-spin-duration').value = settings.spinDuration || 4;
+        populatePrizes('roulette', settings.prizes || []);
+      } else if (gameType === 'slot') {
+        document.getElementById('slot-symbols').value = (settings.symbols || []).join(',');
+        document.getElementById('slot-spin-duration').value = settings.spinDuration || 3;
+        populatePrizes('slot', settings.combinations || []);
+      } else if (gameType === 'capsule') {
+        document.getElementById('capsule-count').value = settings.capsuleCount || 6;
+        document.getElementById('capsule-animation').value = settings.animationDuration || 2;
+        populatePrizes('capsule', settings.prizes || []);
+      } else if (gameType === 'scratch') {
+        document.getElementById('scratch-reveal-percent').value = settings.revealPercent || 70;
+        document.getElementById('scratch-ad-trigger').value = settings.adTrigger || 30;
+        populatePrizes('scratch', settings.prizes || []);
+      }
+    }
+
+    // 경품 데이터 폼에 채우기
+    function populatePrizes(gameType, prizes) {
+      const prizeList = document.getElementById(gameType + '-prizes');
+      prizeList.innerHTML = '';
+
+      prizes.forEach((prize, index) => {
+        const prizeItem = document.createElement('div');
+        prizeItem.className = 'prize-item';
+        
+        if (gameType === 'roulette') {
+          prizeItem.innerHTML = `
+            <input type="text" placeholder="경품명" value="${prize.name || ''}">
+            <input type="number" placeholder="확률%" value="${prize.probability || 0}" min="0" max="100">
+            <input type="text" placeholder="색상" value="${prize.color || '#95a5a6'}">
+            <button onclick="removePrize(this)">삭제</button>
+          `;
+        } else if (gameType === 'slot') {
+          prizeItem.innerHTML = `
+            <input type="text" placeholder="조합 (예: 🍒🍒🍒)" value="${prize.pattern || ''}">
+            <input type="text" placeholder="보상" value="${prize.reward || ''}">
+            <input type="number" placeholder="확률%" value="${prize.probability || 0}" min="0" max="100">
+            <button onclick="removePrize(this)">삭제</button>
+          `;
+        } else {
+          prizeItem.innerHTML = `
+            <input type="text" placeholder="경품명" value="${prize.name || ''}">
+            <input type="text" placeholder="이모지" value="${prize.emoji || '🎁'}">
+            <input type="number" placeholder="확률%" value="${prize.probability || 0}" min="0" max="100">
+            <button onclick="removePrize(this)">삭제</button>
+          `;
+        }
+        
+        prizeList.appendChild(prizeItem);
+      });
+    }
+
+    // 설정 저장
+    async function saveSettings() {
+      try {
+        const settings = {
+          id: currentGame,
+          name: getGameName(currentGame),
+          enabled: true,
+          lastUpdated: new Date().toISOString()
+        };
+
+        // 게임별 설정 수집
+        if (currentGame === 'roulette') {
+          settings.attempts = parseInt(document.getElementById('roulette-attempts').value);
+          settings.spinDuration = parseFloat(document.getElementById('roulette-spin-duration').value);
+          settings.prizes = collectPrizes('roulette');
+        } else if (currentGame === 'slot') {
+          settings.symbols = document.getElementById('slot-symbols').value.split(',').map(s => s.trim());
+          settings.spinDuration = parseFloat(document.getElementById('slot-spin-duration').value);
+          settings.combinations = collectPrizes('slot');
+        } else if (currentGame === 'capsule') {
+          settings.capsuleCount = parseInt(document.getElementById('capsule-count').value);
+          settings.animationDuration = parseFloat(document.getElementById('capsule-animation').value);
+          settings.prizes = collectPrizes('capsule');
+        } else if (currentGame === 'scratch') {
+          settings.revealPercent = parseInt(document.getElementById('scratch-reveal-percent').value);
+          settings.adTrigger = parseInt(document.getElementById('scratch-ad-trigger').value);
+          settings.prizes = collectPrizes('scratch');
+        }
+
+        // API를 통해 저장
+        const response = await window.adminAPI.saveGameSettings(currentGame, settings);
+        
+        if (response.success) {
+          alert(`${getGameName(currentGame)} 설정이 저장되었습니다!`);
+          console.log('저장된 설정:', settings);
+        } else {
+          alert('설정 저장에 실패했습니다: ' + response.error);
+        }
+      } catch (error) {
+        console.error('설정 저장 실패:', error);
+        alert('설정 저장 중 오류가 발생했습니다.');
+      }
+    }
+
+    // 게임 이름 가져오기
+    function getGameName(gameType) {
+      const names = {
+        'roulette': '룰렛',
+        'slot': '슬롯머신',
+        'capsule': '캡슐뽑기',
+        'scratch': '스크래치'
+      };
+      return names[gameType] || gameType;
     }
 
     // 경품 데이터 수집
