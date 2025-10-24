@@ -30,9 +30,9 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    /* 헤더 섹션 */
+    /* 헤더 섹션 - 카카오톡 스타일 */
     .main-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 50%, #FFB6B6 100%);
       color: white;
       padding: 20px;
       text-align: center;
@@ -156,7 +156,7 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: linear-gradient(90deg, #667eea, #764ba2);
+      background: linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4);
     }
 
     .game-icon {
@@ -207,7 +207,7 @@
     }
 
     .attendance-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
       color: white;
       border: none;
       border-radius: 8px;
@@ -286,32 +286,7 @@
       }
     }
 
-    /* 다크 모드 */
-    @media (prefers-color-scheme: dark) {
-      .main-container {
-        background: #1a1a1a;
-      }
-      
-      .points-display,
-      .attendance-section,
-      .info-box,
-      .game-item {
-        background: #2d2d2d;
-        border-color: #404040;
-      }
-      
-      .game-name,
-      .attendance-title,
-      .info-title {
-        color: white;
-      }
-      
-      .game-desc,
-      .attendance-stats,
-      .info-list li {
-        color: #ccc;
-      }
-    }
+    /* 다크 모드 제거 - 밝은 색상 유지 */
   </style>
 </head>
 <body>
@@ -375,7 +350,7 @@
         <div class="game-desc">긁어서 숨겨진 상품을 확인하세요</div>
       </a>
 
-      <a href="offerwall.html" class="game-item" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <a href="offerwall.html" class="game-item" style="background: linear-gradient(135deg, #FFD93D 0%, #FF6B6B 100%); color: white;">
         <span class="game-icon">💰</span>
         <div class="game-name">포인트 적립</div>
         <div class="game-desc">미션을 완료하고 포인트를 모아보세요</div>

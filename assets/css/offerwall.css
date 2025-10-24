@@ -26,9 +26,9 @@
   text-align: center;
 }
 
-/* 포인트 표시 섹션 */
+/* 포인트 표시 섹션 - 카카오톡 스타일 */
 .points-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 50%, #FFB6B6 100%);
   color: white;
   padding: 24px 20px;
   text-align: center;
