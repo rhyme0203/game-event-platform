@@ -152,7 +152,7 @@
   <!-- 광고 모달 -->
   <div class="ad-modal" id="adModal">
     <div class="ad-modal-content">
-      <button class="ad-modal-close" onclick="closeAdModal()">&times;</button>
+      <button class="ad-modal-close" onclick="closeAdModalAndSpin()">&times;</button>
       
       <div class="ad-modal-header">
         <div class="ad-modal-title">🎯 특별 이벤트!</div>
@@ -407,6 +407,18 @@
     function closeAdModal() {
       const modal = document.getElementById('adModal');
       modal.classList.remove('show');
+    }
+    
+    // 광고 모달 닫고 스핀 시작
+    function closeAdModalAndSpin() {
+      console.log('X 버튼으로 모달 닫기');
+      closeAdModal();
+      // 모달이 닫힌 후 스핀 시작
+      setTimeout(() => {
+        if (!isSpinning) {
+          spin();
+        }
+      }, 300);
     }
     
     // 카운트다운 시작
