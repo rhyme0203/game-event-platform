@@ -109,6 +109,18 @@
       100% { transform: rotate(360deg); }
     }
 
+    /* 초기 로딩 상태에서 버튼 숨김 */
+    #spinBtn {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #spinBtn.loaded {
+      opacity: 1;
+      visibility: visible;
+    }
+
     @media (max-width: 600px) {
       .roulette-container {
         width: 300px;
@@ -148,7 +160,7 @@
         </div>
       </div>
 
-      <button class="start-button" id="spinBtn" onclick="showAdModal()" style="display: none;">룰렛 돌리기</button>
+      <button class="start-button" id="spinBtn" onclick="showAdModal()">룰렛 돌리기</button>
 
       <div class="info-box">
         <p><strong>참여 방법</strong></p>
@@ -466,7 +478,7 @@
         spinCount.style.display = 'block';
       }
       if (spinBtn) {
-        spinBtn.style.display = 'block';
+        spinBtn.classList.add('loaded');
       }
       
       // 룰렛 다시 그리기

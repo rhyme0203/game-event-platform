@@ -90,6 +90,9 @@ h1 {
   box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
   text-transform: uppercase;
   letter-spacing: 1px;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .start-button:hover:not(:disabled) {
