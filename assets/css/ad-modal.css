@@ -1,0 +1,175 @@
+/* 광고 모달 스타일 */
+.ad-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.ad-modal.show {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ad-modal-content {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  animation: slideUp 0.5s ease;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.ad-modal-header {
+  margin-bottom: 20px;
+}
+
+.ad-modal-title {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.ad-modal-subtitle {
+  color: #666;
+  font-size: 1em;
+}
+
+.ad-modal-body {
+  margin: 20px 0;
+}
+
+.ad-modal-ad {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  border: 2px dashed #ddd;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.ad-modal-ad-placeholder {
+  color: #999;
+  font-size: 0.9em;
+  text-align: center;
+}
+
+.ad-modal-footer {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ad-modal-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.ad-modal-btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+}
+
+.ad-modal-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+}
+
+.ad-modal-btn-secondary {
+  background: #f8f9fa;
+  color: #666;
+  border: 2px solid #e9ecef;
+}
+
+.ad-modal-btn-secondary:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.ad-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.ad-modal-close:hover {
+  color: #333;
+}
+
+.ad-modal-countdown {
+  background: var(--primary-color);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* 모바일 대응 */
+@media (max-width: 600px) {
+  .ad-modal-content {
+    padding: 20px;
+    margin: 20px;
+  }
+  
+  .ad-modal-title {
+    font-size: 1.5em;
+  }
+  
+  .ad-modal-footer {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .ad-modal-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+}

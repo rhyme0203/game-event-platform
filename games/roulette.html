@@ -6,6 +6,7 @@
   <title>럭키빤쓰 - 행운의 룰렛</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/ads.css">
+  <link rel="stylesheet" href="../assets/css/ad-modal.css">
   
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
@@ -110,7 +111,7 @@
         </div>
       </div>
 
-      <button class="start-button" id="spinBtn" onclick="spin()">룰렛 돌리기</button>
+      <button class="start-button" id="spinBtn" onclick="showAdModal()">룰렛 돌리기</button>
 
       <div class="info-box">
         <p><strong>참여 방법</strong></p>
@@ -145,6 +146,44 @@
       </div>
       
       <button class="close-button" id="closeBtn">확인</button>
+    </div>
+  </div>
+
+  <!-- 광고 모달 -->
+  <div class="ad-modal" id="adModal">
+    <div class="ad-modal-content">
+      <button class="ad-modal-close" onclick="closeAdModal()">&times;</button>
+      
+      <div class="ad-modal-header">
+        <div class="ad-modal-title">🎯 특별 이벤트!</div>
+        <div class="ad-modal-subtitle">럭키빤쓰 프리미엄 서비스를 확인해보세요</div>
+      </div>
+      
+      <div class="ad-modal-body">
+        <div class="ad-modal-ad">
+          <!-- Google AdSense 광고 -->
+          <ins class="adsbygoogle"
+               style="display:block;width:300px;height:250px;"
+               data-ad-client="ca-pub-8451876651536601"
+               data-ad-slot="5939741579"></ins>
+          <div class="ad-modal-ad-placeholder" style="display:none;">
+            광고 로딩 중...
+          </div>
+        </div>
+        
+        <div class="ad-modal-countdown" id="countdown" style="display:none;">
+          <span id="countdownText">5</span>초 후 게임 시작
+        </div>
+      </div>
+      
+      <div class="ad-modal-footer">
+        <button class="ad-modal-btn ad-modal-btn-primary" onclick="startGame()" id="startGameBtn">
+          게임 시작하기
+        </button>
+        <button class="ad-modal-btn ad-modal-btn-secondary" onclick="skipAd()">
+          광고 건너뛰기
+        </button>
+      </div>
     </div>
   </div>
 
@@ -347,6 +386,61 @@
 
     // Google AdSense 초기화
     (adsbygoogle = window.adsbygoogle || []).push({});
+    
+    // 광고 모달 표시
+    function showAdModal() {
+      console.log('광고 모달 표시');
+      const modal = document.getElementById('adModal');
+      modal.classList.add('show');
+      
+      // 광고 로드 후 카운트다운 시작
+      setTimeout(() => {
+        startCountdown();
+      }, 2000);
+    }
+    
+    // 광고 모달 닫기
+    function closeAdModal() {
+      const modal = document.getElementById('adModal');
+      modal.classList.remove('show');
+    }
+    
+    // 카운트다운 시작
+    function startCountdown() {
+      const countdown = document.getElementById('countdown');
+      const countdownText = document.getElementById('countdownText');
+      const startBtn = document.getElementById('startGameBtn');
+      
+      countdown.style.display = 'block';
+      startBtn.style.display = 'none';
+      
+      let timeLeft = 5;
+      countdownText.textContent = timeLeft;
+      
+      const timer = setInterval(() => {
+        timeLeft--;
+        countdownText.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          startGame();
+        }
+      }, 1000);
+    }
+    
+    // 게임 시작
+    function startGame() {
+      console.log('게임 시작!');
+      closeAdModal();
+      spin();
+    }
+    
+    // 광고 건너뛰기
+    function skipAd() {
+      console.log('광고 건너뛰기');
+      closeAdModal();
+      spin();
+    }
     
     // 광고 클릭 추적
     function trackAdClick(adType) {
