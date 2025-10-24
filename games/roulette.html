@@ -417,6 +417,13 @@
     function closeAdModal() {
       const modal = document.getElementById('adModal');
       modal.classList.remove('show');
+      
+      // 모달이 닫힌 후 스핀 시작
+      setTimeout(() => {
+        if (!isSpinning) {
+          spin();
+        }
+      }, 300);
     }
     
     // 카운트다운 시작
@@ -437,13 +444,8 @@
         
         if (timeLeft <= 0) {
           clearInterval(timer);
-          // 카운트다운 완료 후 모달 닫고 게임 시작 (한 번만)
+          // 카운트다운 완료 후 모달 닫기 (closeAdModal에서 자동으로 spin() 호출됨)
           closeAdModal();
-          setTimeout(() => {
-            if (!isSpinning) {
-              spin();
-            }
-          }, 300);
         }
       }, 1000);
     }
@@ -451,25 +453,13 @@
     // 게임 시작
     function startGame() {
       console.log('게임 시작!');
-      closeAdModal();
-      // 모달이 완전히 닫힌 후 스핀 시작 (한 번만)
-      setTimeout(() => {
-        if (!isSpinning) {
-          spin();
-        }
-      }, 300);
+      closeAdModal(); // closeAdModal에서 자동으로 spin() 호출됨
     }
     
     // 광고 건너뛰기
     function skipAd() {
       console.log('광고 건너뛰기');
-      closeAdModal();
-      // 모달이 완전히 닫힌 후 스핀 시작 (한 번만)
-      setTimeout(() => {
-        if (!isSpinning) {
-          spin();
-        }
-      }, 300);
+      closeAdModal(); // closeAdModal에서 자동으로 spin() 호출됨
     }
     
     // 광고 클릭 추적
