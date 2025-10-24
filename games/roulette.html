@@ -241,16 +241,23 @@
     </div>
   </div>
 
+  <!-- GitHub DB 스크립트 (우선) -->
+  <script src="../assets/js/github-db.js"></script>
   <!-- SQL API 스크립트 -->
   <script src="../assets/js/sql-api.js"></script>
   <!-- 관리자 통합 스크립트 (폴백용) -->
   <script src="../assets/js/admin-integration.js"></script>
-  <script src="../assets/js/github-db.js"></script>
   <!-- 포인트 시스템 -->
   <script src="../assets/js/point-system.js"></script>
   
   <script>
     console.log('스크립트 로드됨!');
+    
+    // GitHub DB 초기화
+    if (typeof GitHubDatabase !== 'undefined') {
+      window.githubDB = new GitHubDatabase();
+      console.log('GitHub DB 초기화됨');
+    }
     
     // 로딩 상태 관리
     let isLoading = true;
@@ -636,6 +643,43 @@
         console.log('로컬 환경 게임 설정 로딩 완료');
         return;
       }
+      
+      // GitHub Pages 환경: GitHub DB 우선 사용
+      console.log('GitHub Pages 환경: GitHub DB 사용 시도');
+      
+      // GitHub DB가 로드될 때까지 대기
+      const checkGitHubDB = () => {
+        if (window.githubDB) {
+          console.log('GitHub DB 발견, 설정 로드 시도');
+          
+          // GitHub DB에서 룰렛 설정 로드
+          const rouletteSettings = window.githubDB.getGameSettings('roulette');
+          if (rouletteSettings && rouletteSettings.prizes) {
+            prizes = rouletteSettings.prizes;
+            console.log('GitHub DB에서 경품 데이터 로드:', prizes);
+          }
+          
+          if (rouletteSettings && rouletteSettings.maxAttempts) {
+            remaining = rouletteSettings.maxAttempts;
+            if (remainingText) {
+              remainingText.textContent = remaining;
+            }
+            console.log('GitHub DB에서 시도 횟수 로드:', remaining);
+          }
+          
+          // 로딩 완료
+          isLoading = false;
+          isDataLoaded = true;
+          showGameUI();
+          console.log('GitHub DB 설정 로딩 완료');
+        } else {
+          console.log('GitHub DB 대기 중...');
+          setTimeout(checkGitHubDB, 100);
+        }
+      };
+      
+      checkGitHubDB();
+      return;
       
       try {
         // SQL API 존재 확인
