@@ -195,10 +195,10 @@
 
     <!-- 게임 선택 탭 -->
     <div class="game-selector">
-      <div class="game-tab active" onclick="switchGame('roulette')">🎡 룰렛</div>
-      <div class="game-tab" onclick="switchGame('slot')">🎰 슬롯머신</div>
-      <div class="game-tab" onclick="switchGame('capsule')">🎁 캡슐뽑기</div>
-      <div class="game-tab" onclick="switchGame('scratch')">🎫 스크래치</div>
+      <div class="game-tab active" onclick="switchGame('roulette', this)">🎡 룰렛</div>
+      <div class="game-tab" onclick="switchGame('slot', this)">🎰 슬롯머신</div>
+      <div class="game-tab" onclick="switchGame('capsule', this)">🎁 캡슐뽑기</div>
+      <div class="game-tab" onclick="switchGame('scratch', this)">🎫 스크래치</div>
     </div>
 
     <!-- 룰렛 설정 -->
@@ -360,14 +360,23 @@
     let currentGame = 'roulette';
 
     // 게임 전환
-    function switchGame(gameType) {
+    function switchGame(gameType, targetElement = null) {
       currentGame = gameType;
       
       // 탭 활성화
       document.querySelectorAll('.game-tab').forEach(tab => {
         tab.classList.remove('active');
       });
-      event.target.classList.add('active');
+      
+      // targetElement가 있으면 해당 요소를 활성화, 없으면 gameType과 일치하는 탭을 찾아서 활성화
+      if (targetElement) {
+        targetElement.classList.add('active');
+      } else {
+        const targetTab = document.querySelector(`[onclick*="${gameType}"]`);
+        if (targetTab) {
+          targetTab.classList.add('active');
+        }
+      }
 
       // 설정 섹션 전환
       document.querySelectorAll('.game-settings').forEach(section => {
@@ -435,10 +444,15 @@
     // 게임 설정 로드
     async function loadGameSettings(gameType) {
       try {
+        console.log('게임 설정 로드 시작:', gameType);
         const response = await window.adminAPI.getGameSettings(gameType);
+        console.log('API 응답:', response);
         if (response.success) {
           const settings = response.data;
+          console.log('설정 데이터:', settings);
           populateGameSettings(gameType, settings);
+        } else {
+          console.warn('게임 설정 로드 실패:', response.error);
         }
       } catch (error) {
         console.error('게임 설정 로드 실패:', error);
@@ -447,28 +461,49 @@
 
     // 게임 설정 폼에 데이터 채우기
     function populateGameSettings(gameType, settings) {
+      console.log('게임 설정 폼 채우기:', gameType, settings);
+      
       if (gameType === 'roulette') {
-        document.getElementById('roulette-attempts').value = settings.attempts || 3;
-        document.getElementById('roulette-spin-duration').value = settings.spinDuration || 4;
+        const attemptsInput = document.getElementById('roulette-attempts');
+        const durationInput = document.getElementById('roulette-spin-duration');
+        
+        if (attemptsInput) attemptsInput.value = settings.attempts || 3;
+        if (durationInput) durationInput.value = settings.spinDuration || 4;
         populatePrizes('roulette', settings.prizes || []);
       } else if (gameType === 'slot') {
-        document.getElementById('slot-symbols').value = (settings.symbols || []).join(',');
-        document.getElementById('slot-spin-duration').value = settings.spinDuration || 3;
+        const symbolsInput = document.getElementById('slot-symbols');
+        const durationInput = document.getElementById('slot-spin-duration');
+        
+        if (symbolsInput) symbolsInput.value = (settings.symbols || []).join(',');
+        if (durationInput) durationInput.value = settings.spinDuration || 3;
         populatePrizes('slot', settings.combinations || []);
       } else if (gameType === 'capsule') {
-        document.getElementById('capsule-count').value = settings.capsuleCount || 6;
-        document.getElementById('capsule-animation').value = settings.animationDuration || 2;
+        const countInput = document.getElementById('capsule-count');
+        const animationInput = document.getElementById('capsule-animation');
+        
+        if (countInput) countInput.value = settings.capsuleCount || 6;
+        if (animationInput) animationInput.value = settings.animationDuration || 2;
         populatePrizes('capsule', settings.prizes || []);
       } else if (gameType === 'scratch') {
-        document.getElementById('scratch-reveal-percent').value = settings.revealPercent || 70;
-        document.getElementById('scratch-ad-trigger').value = settings.adTrigger || 30;
+        const revealInput = document.getElementById('scratch-reveal-percent');
+        const adTriggerInput = document.getElementById('scratch-ad-trigger');
+        
+        if (revealInput) revealInput.value = settings.revealPercent || 70;
+        if (adTriggerInput) adTriggerInput.value = settings.adTrigger || 30;
         populatePrizes('scratch', settings.prizes || []);
       }
     }
 
     // 경품 데이터 폼에 채우기
     function populatePrizes(gameType, prizes) {
+      console.log('경품 데이터 폼 채우기:', gameType, prizes);
       const prizeList = document.getElementById(gameType + '-prizes');
+      
+      if (!prizeList) {
+        console.error('경품 리스트 요소를 찾을 수 없습니다:', gameType + '-prizes');
+        return;
+      }
+      
       prizeList.innerHTML = '';
 
       prizes.forEach((prize, index) => {
@@ -590,7 +625,9 @@
       const urlParams = new URLSearchParams(window.location.search);
       const game = urlParams.get('game');
       if (game && ['roulette', 'slot', 'capsule', 'scratch'].includes(game)) {
-        switchGame(game);
+        // URL 파라미터로 접근한 경우 해당 탭을 활성화
+        const targetTab = document.querySelector(`[onclick*="${game}"]`);
+        switchGame(game, targetTab);
       }
     });
   </script>
