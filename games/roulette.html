@@ -288,16 +288,8 @@
       ctx = canvas.getContext('2d');
       console.log('ctx:', ctx);
 
-      // 이벤트 리스너
-      if (spinBtn) {
-        console.log('버튼에 이벤트 리스너 추가');
-        spinBtn.addEventListener('click', function() {
-          console.log('=== 버튼 클릭됨! ===');
-          spin();
-        });
-      } else {
-        console.error('spinBtn을 찾을 수 없습니다!');
-      }
+      // 이벤트 리스너 (룰렛 돌리기 버튼은 onclick으로 처리)
+      console.log('버튼 이벤트 리스너는 onclick으로 처리됨');
       
       closeBtn.addEventListener('click', closeModal);
       resultModal.addEventListener('click', (e) => {
