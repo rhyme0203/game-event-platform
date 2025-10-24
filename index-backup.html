@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>럭키빤쓰 - 행운을 잡아라!</title>
+  <link rel="stylesheet" href="assets/css/common.css">
+  <link rel="stylesheet" href="assets/css/ads.css">
+  <link rel="stylesheet" href="assets/css/point-system.css">
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
+       crossorigin="anonymous"></script>
+  
+  <!-- AdSense 코드 스니펫 -->
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-8451876651536601",
+      enable_page_level_ads: true
+    });
+  </script>
+  <style>
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+      max-width: 1200px;
+      width: 90%;
+    }
+
+    .game-item {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .game-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .game-name {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .game-desc {
+      color: #666;
+      font-size: 1em;
+      line-height: 1.5;
+    }
+
+    .hero {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      color: white;
+      font-size: 3.5em;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero p {
+      font-size: 1.3em;
+      opacity: 0.95;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .feature-badge {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 0.9em;
+      color: white;
+    }
+
+    /* 출석체크 스타일 */
+    .attendance-section {
+      margin: 40px 0;
+    }
+
+    .attendance-section h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+
+    .attendance-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      padding: 30px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+    }
+
+    .attendance-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .attendance-desc {
+      font-size: 1em;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .attendance-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin: 20px 0;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .calendar-day.checked {
+      background: #4CAF50;
+      transform: scale(1.1);
+    }
+
+    .calendar-day.today {
+      background: #FF9800;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .attendance-btn {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px auto 0;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .attendance-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+    }
+
+    .attendance-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-icon {
+      font-size: 1.2em;
+    }
+
+    @media (max-width: 600px) {
+      .attendance-card {
+        padding: 20px;
+      }
+      
+      .attendance-calendar {
+        max-width: 250px;
+      }
+      
+      .calendar-day {
+        font-size: 0.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>🎰 럭키빤쓰</h1>
+    <p>당신의 행운을 시험해보세요! 재미있는 게임으로 경품을 받아가세요</p>
+    <div class="features">
+      <span class="feature-badge">✨ 다양한 게임</span>
+      <span class="feature-badge">🎨 커스터마이징</span>
+      <span class="feature-badge">📊 실시간 분석</span>
+      <span class="feature-badge">🚀 쉬운 임베딩</span>
+    </div>
+  </div>
+
+
+  <!-- 출석체크 섹션 -->
+  <div class="attendance-section">
+    <h2>📅 출석체크</h2>
+    <div class="attendance-card">
+      <div class="attendance-info">
+        <div class="attendance-title">매일 출석하고 보너스를 받으세요!</div>
+        <div class="attendance-desc">연속 출석일수에 따라 특별한 보너스를 드립니다</div>
+      </div>
+      <div class="attendance-calendar" id="attendanceCalendar">
+        <!-- 달력이 여기에 생성됩니다 -->
+      </div>
+      <button class="attendance-btn" id="attendanceBtn" onclick="checkAttendance()">
+        <span class="btn-text">출석체크</span>
+        <span class="btn-icon">✅</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="games-grid">
+    <a href="games/roulette.html" class="game-item">
+      <span class="game-icon">🎡</span>
+      <div class="game-name">룰렛</div>
+      <div class="game-desc">돌아가는 룰렛으로 행운의 상품을 받아보세요</div>
+    </a>
+
+    <a href="games/slot.html" class="game-item">
+      <span class="game-icon">🎰</span>
+      <div class="game-name">슬롯머신</div>
+      <div class="game-desc">3개의 릴을 돌려 같은 그림을 맞춰보세요</div>
+    </a>
+
+    <a href="games/capsule.html" class="game-item">
+      <span class="game-icon">🔮</span>
+      <div class="game-name">캡슐뽑기</div>
+      <div class="game-desc">알록달록한 캡슐 중 하나를 선택해보세요</div>
+    </a>
+
+    <a href="games/scratch.html" class="game-item">
+      <span class="game-icon">🎫</span>
+      <div class="game-name">스크래치</div>
+      <div class="game-desc">긁어서 숨겨진 상품을 확인하세요</div>
+    </a>
+
+    <a href="offerwall.html" class="game-item" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <span class="game-icon">💰</span>
+      <div class="game-name">포인트 적립</div>
+      <div class="game-desc">미션을 완료하고 포인트를 모아보세요</div>
+    </a>
+  </div>
+
+  <div class="info-box" style="margin-top: 60px; max-width: 800px; background: rgba(255,255,255,0.9);">
+    <h3 style="margin-bottom: 15px; color: var(--primary-color);">💡 이런 기능들을 제공합니다</h3>
+    <ul style="text-align: left; line-height: 2; list-style: none; padding: 0;">
+      <li>✅ 다양한 게임 타입 지원 (룰렛, 슬롯, 캡슐, 스크래치 등)</li>
+      <li>✅ 브랜드 맞춤 커스터마이징 (컬러, 폰트, 로고)</li>
+      <li>✅ 이벤트 기간 및 참여 조건 설정</li>
+      <li>✅ 리워드 확률 및 수량 관리</li>
+      <li>✅ 참여자 데이터 수집 및 분석</li>
+      <li>✅ 중복 참여 방지 (IP, 전화번호, 쿠키)</li>
+      <li>✅ 간편한 웹사이트/앱 임베딩</li>
+    </ul>
+  </div>
+
+
+  <script>
+    // Google AdSense 초기화 (중복 방지)
+    if (typeof adsbygoogle !== 'undefined' && adsbygoogle.loaded) {
+      // 이미 로드된 경우 스킵
+    } else {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+    
+    // 출석체크 관련 변수
+    let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {
+      lastCheckDate: null,
+      consecutiveDays: 0,
+      totalDays: 0
+    };
+
+    // 출석체크 달력 생성
+    function createAttendanceCalendar() {
+      const calendar = document.getElementById('attendanceCalendar');
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      
+      // 요일 헤더
+      const dayHeaders = ['일', '월', '화', '수', '목', '금', '토'];
+      dayHeaders.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.textContent = day;
+        dayHeader.style.fontSize = '0.8em';
+        dayHeader.style.fontWeight = 'bold';
+        dayHeader.style.opacity = '0.7';
+        calendar.appendChild(dayHeader);
+      });
+
+      // 이번 달의 날짜들
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const startDate = new Date(firstDay);
+      startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+      for (let i = 0; i < 35; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = date.getDate();
+        
+        // 오늘 날짜 표시
+        if (date.toDateString() === today.toDateString()) {
+          dayElement.classList.add('today');
+        }
+        
+        // 출석체크된 날짜 표시
+        const dateStr = date.toDateString();
+        if (attendanceData.checkedDates && attendanceData.checkedDates.includes(dateStr)) {
+          dayElement.classList.add('checked');
+        }
+        
+        calendar.appendChild(dayElement);
+      }
+    }
+
+    // 출석체크 실행
+    function checkAttendance() {
+      const today = new Date();
+      const todayStr = today.toDateString();
+      
+      // 이미 오늘 출석체크 했는지 확인
+      if (attendanceData.lastCheckDate === todayStr) {
+        alert('이미 오늘 출석체크를 완료했습니다!');
+        return;
+      }
+
+      // 출석체크 데이터 업데이트
+      attendanceData.lastCheckDate = todayStr;
+      attendanceData.totalDays++;
+      
+      // 포인트 지급
+      if (window.pointSystem) {
+        window.pointSystem.addPoints(50, '출석체크');
+      }
+      
+      // 연속 출석일수 계산
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toDateString();
+      
+      if (attendanceData.lastCheckDate === yesterdayStr) {
+        attendanceData.consecutiveDays++;
+      } else {
+        attendanceData.consecutiveDays = 1;
+      }
+
+      // 출석체크된 날짜 저장
+      if (!attendanceData.checkedDates) {
+        attendanceData.checkedDates = [];
+      }
+      attendanceData.checkedDates.push(todayStr);
+
+      // 로컬스토리지에 저장
+      localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+
+      // 버튼 비활성화
+      const btn = document.getElementById('attendanceBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-text">출석완료</span><span class="btn-icon">✅</span>';
+
+      // 보너스 계산
+      let bonus = 0;
+      if (attendanceData.consecutiveDays >= 7) {
+        bonus = 1000; // 7일 연속 출석
+      } else if (attendanceData.consecutiveDays >= 3) {
+        bonus = 500; // 3일 연속 출석
+      } else {
+        bonus = 100; // 기본 출석
+      }
+
+      // 결과 표시
+      alert(`출석체크 완료!\n연속 출석: ${attendanceData.consecutiveDays}일\n보너스: ${bonus} 포인트`);
+
+      // 달력 새로고침
+      const calendar = document.getElementById('attendanceCalendar');
+      calendar.innerHTML = '';
+      createAttendanceCalendar();
+    }
+
+    // 페이지 로드 시 초기화
+    window.addEventListener('DOMContentLoaded', function() {
+      createAttendanceCalendar();
+      
+      // 오늘 이미 출석체크 했는지 확인
+      const today = new Date().toDateString();
+      if (attendanceData.lastCheckDate === today) {
+        const btn = document.getElementById('attendanceBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="btn-text">출석완료</span><span class="btn-icon">✅</span>';
+      }
+    });
+
+    // 광고 클릭 추적
+    function trackAdClick(adType) {
+      console.log('광고 클릭:', adType);
+      // Google Analytics 추적
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'ad_click', {
+          'ad_type': adType,
+          'page': window.location.pathname
+        });
+      }
+    }
+
+  </script>
+  
+  <!-- 포인트 시스템 -->
+  <script src="assets/js/point-system.js"></script>
+</body>
+</html>
+
