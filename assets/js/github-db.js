@@ -36,27 +36,23 @@ class GitHubDatabase {
   // 게임 데이터 로드
   async loadGameData() {
     try {
-      // 절대 경로로 데이터 파일 로드
-      const response = await fetch('/data/game-database.json');
-      if (response.ok) {
-        const data = await response.json();
-        this.fallbackData = data;
-        console.log('게임 데이터 파일 로드됨:', data);
-      } else {
-        throw new Error('데이터 파일을 찾을 수 없습니다');
-      }
-    } catch (error) {
-      console.warn('데이터 파일 로드 실패, 로컬 데이터 사용:', error);
-      
-      // 로컬 데이터 확인
+      // 로컬스토리지에서 데이터 로드 (GitHub API 사용 안함)
       const localData = localStorage.getItem('gameDatabase');
       if (localData) {
         this.fallbackData = JSON.parse(localData);
-        console.log('로컬 폴백 데이터 로드됨');
+        console.log('로컬 데이터 로드됨:', this.fallbackData);
       } else {
+        // 기본 데이터 사용
         this.fallbackData = this.getDefaultData();
-        console.log('기본 폴백 데이터 로드됨');
+        console.log('기본 데이터 로드됨:', this.fallbackData);
+        
+        // 로컬스토리지에 기본 데이터 저장
+        localStorage.setItem('gameDatabase', JSON.stringify(this.fallbackData));
+        console.log('기본 데이터를 로컬스토리지에 저장');
       }
+    } catch (error) {
+      console.error('데이터 로드 실패:', error);
+      this.fallbackData = this.getDefaultData();
     }
   }
 
@@ -89,24 +85,24 @@ class GitHubDatabase {
     };
   }
 
-  // GitHub에서 데이터 가져오기
+  // 데이터베이스 가져오기 (로컬스토리지 사용)
   async getDatabase() {
     try {
-      // GitHub API로 파일 내용 가져오기
-      const response = await fetch(`https://api.github.com/repos/${this.repo}/contents/${this.filePath}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        const content = atob(data.content); // Base64 디코딩
-        const parsed = JSON.parse(content);
-        console.log('GitHub 데이터 로드됨:', parsed);
-        return parsed;
+      // 로컬스토리지에서 데이터 로드
+      const localData = localStorage.getItem('gameDatabase');
+      if (localData) {
+        const data = JSON.parse(localData);
+        console.log('로컬 데이터베이스 로드됨:', data);
+        return data;
       } else {
-        throw new Error('GitHub 데이터 로드 실패');
+        // 기본 데이터 반환
+        const defaultData = this.getDefaultData();
+        console.log('기본 데이터베이스 사용:', defaultData);
+        return defaultData;
       }
     } catch (error) {
-      console.warn('GitHub 데이터 로드 실패, 폴백 사용:', error);
-      return this.fallbackData;
+      console.warn('데이터베이스 로드 실패, 기본 데이터 사용:', error);
+      return this.fallbackData || this.getDefaultData();
     }
   }
 
