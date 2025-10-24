@@ -685,6 +685,13 @@
           isLoading = false;
           isDataLoaded = true;
           showGameUI();
+          
+          // 룰렛 휠 다시 그리기
+          if (typeof drawRoulette === 'function') {
+            drawRoulette();
+            console.log('룰렛 휠 다시 그리기 완료');
+          }
+          
           console.log('GitHub DB 설정 로딩 완료');
         } else {
           console.log('GitHub DB 대기 중...');
