@@ -253,6 +253,18 @@
     let currentAttempts = 3;
     const maxAttempts = 3;
     const spinDuration = 4000; // 4초
+    
+    // GitHub Pages용 기본 상품 데이터
+    const defaultPrizes = [
+      { id: 1, name: "꽝", probability: 0.3, color: "#ff6b6b" },
+      { id: 2, name: "100원", probability: 0.2, color: "#4ecdc4" },
+      { id: 3, name: "500원", probability: 0.15, color: "#45b7d1" },
+      { id: 4, name: "1000원", probability: 0.1, color: "#96ceb4" },
+      { id: 5, name: "5000원", probability: 0.05, color: "#feca57" },
+      { id: 6, name: "10000원", probability: 0.05, color: "#ff9ff3" },
+      { id: 7, name: "50000원", probability: 0.03, color: "#54a0ff" },
+      { id: 8, name: "100000원", probability: 0.02, color: "#5f27cd" }
+    ];
 
     // DOM 요소
     let wheel, canvas, ctx, spinBtn, resultModal, prizeText, closeBtn, remainingText;
