@@ -11,18 +11,9 @@
   <link rel="stylesheet" href="../assets/css/point-system.css">
   
   <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
-       crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601" crossorigin="anonymous"></script>
   
-  <!-- AdSense 코드 스니펫 -->
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({
-      google_ad_client: "ca-pub-8451876651536601",
-      enable_page_level_ads: true
-    });
-  </script>
   <style>
-    /* Body 배경색 흰색으로 설정 */
     body {
       background: white !important;
       margin: 0;
@@ -42,885 +33,433 @@
       border-radius: 50%;
       position: relative;
       transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-      box-shadow: 0 0 0 15px #fff, 0 0 0 18px var(--primary-color), 0 10px 50px rgba(0, 0, 0, 0.3);
+      border: 8px solid #333;
       overflow: hidden;
     }
 
     .roulette-wheel.spinning {
-      transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+      animation: spin 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
     }
 
-    .roulette-wheel.stopped {
-      transition: none;
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(1800deg); }
     }
 
-    .roulette-canvas {
-      width: 100%;
-      height: 100%;
-    }
-
-    .roulette-pin {
+    .roulette-pointer {
       position: absolute;
-      top: -25px;
+      top: -10px;
       left: 50%;
       transform: translateX(-50%);
       width: 0;
       height: 0;
       border-left: 15px solid transparent;
       border-right: 15px solid transparent;
-      border-top: 35px solid var(--danger-color);
+      border-bottom: 30px solid #333;
       z-index: 10;
-      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
     }
 
-    .roulette-center {
+    .roulette-segment {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      transform-origin: 100% 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+      font-size: 12px;
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .info-section {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .attempts-info {
+      font-size: 18px;
+      margin: 15px 0;
+      color: #333;
+    }
+
+    .attempts-number {
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .start-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: block;
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    .start-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .start-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .result-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+    }
+
+    .result-content {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 80px;
-      height: 80px;
       background: white;
-      border-radius: 50%;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 300px;
+      width: 90%;
+    }
+
+    .result-prize {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin: 20px 0;
+    }
+
+    .result-actions {
+      margin-top: 20px;
+    }
+
+    .result-actions button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+
+    .ad-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+    }
+
+    .ad-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 300px;
+      width: 90%;
+    }
+
+    .ad-placeholder {
+      background: #f0f0f0;
+      height: 250px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 36px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      z-index: 5;
-    }
-
-    .spin-count {
-      margin-top: 30px;
-      font-size: 1.1em;
-      color: #666;
-      font-weight: 600;
-    }
-
-    .spin-count span {
-      color: var(--primary-color);
-      font-size: 1.3em;
-      font-weight: 700;
-    }
-
-    /* 로딩 상태 스타일 */
-    .loading-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #666;
-    }
-
-    .loading-spinner {
-      font-size: 3em;
-      margin-bottom: 20px;
-      animation: spin 2s linear infinite;
-    }
-
-    .loading-text {
-      font-size: 1.2em;
-      font-weight: 600;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* 초기 로딩 상태에서 버튼 숨김 */
-    #spinBtn {
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-
-    #spinBtn.loaded {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    @media (max-width: 600px) {
-      .roulette-container {
-        width: 300px;
-        height: 300px;
-      }
-      .roulette-center {
-        width: 60px;
-        height: 60px;
-        font-size: 28px;
-      }
+      border: 2px dashed #ccc;
+      margin: 10px 0;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="game-card">
-      <h1>🎡 행운의 룰렛</h1>
-      <p class="subtitle">룰렛을 돌려 경품을 받아가세요!</p>
-
-      <div class="game-area">
-        <div class="roulette-container">
-          <div class="roulette-pin"></div>
-          <div class="roulette-wheel" id="wheel">
-            <canvas id="rouletteCanvas" class="roulette-canvas"></canvas>
-          </div>
-          <div class="roulette-center">🎁</div>
-        </div>
-        
-        <!-- 로딩 상태 표시 -->
-        <div id="loadingState" class="loading-state">
-          <div class="loading-spinner">⏳</div>
-          <div class="loading-text">게임 설정을 불러오는 중...</div>
-        </div>
-        
-        <div class="spin-count" id="spinCount" style="display: none;">
-          남은 기회: <span id="remaining">3</span>회
-        </div>
+  <div class="game-container">
+    <h1>🎰 행운의 룰렛</h1>
+    
+    <div class="roulette-container">
+      <div class="roulette-wheel" id="rouletteWheel">
+        <div class="roulette-pointer"></div>
       </div>
-
+    </div>
+    
+    <div class="info-section">
+      <div class="attempts-info">
+        남은 기회: <span class="attempts-number" id="remainingAttempts">3</span>회
+      </div>
+      
       <button class="start-button" id="spinBtn" onclick="showAdModal()">룰렛 돌리기</button>
-
-      <div class="info-box">
-        <p><strong>참여 방법</strong></p>
-        <p>버튼을 눌러 룰렛을 돌리면 자동으로 경품이 추첨됩니다.</p>
-        <p>하루 3회까지 참여 가능합니다.</p>
-      </div>
-
-      <a href="../index.html" class="back-link">← 메인으로 돌아가기</a>
     </div>
   </div>
-
+  
   <!-- 결과 모달 -->
   <div class="result-modal" id="resultModal">
     <div class="result-content">
-      <div class="result-icon">🎉</div>
-      <div class="result-title">축하합니다!</div>
-      <div class="result-prize" id="prizeText"></div>
-      
-      
-      <button class="close-button" id="closeBtn">확인</button>
+      <h2>🎉 축하합니다!</h2>
+      <div class="result-prize" id="resultPrize"></div>
+      <div class="result-actions">
+        <button onclick="closeResultModal()">확인</button>
+        <button onclick="showAdModal()">광고 보기</button>
+      </div>
     </div>
   </div>
-
+  
   <!-- 광고 모달 -->
   <div class="ad-modal" id="adModal">
-    <div class="ad-modal-content">
-      <button class="ad-modal-close" onclick="closeAdModalAndSpin()">&times;</button>
-      
-      <div class="ad-modal-header">
-        <div class="ad-modal-title">🎯 특별 이벤트!</div>
-        <div class="ad-modal-subtitle">럭키빤쓰 프리미엄 서비스를 확인해보세요</div>
+    <div class="ad-content">
+      <h3>광고를 시청해주세요</h3>
+      <div class="ad-placeholder" id="adPlaceholder">
+        광고 로딩 중...
       </div>
-      
-      <div class="ad-modal-body">
-        <div class="ad-modal-ad">
-          <!-- 룰렛광고 -->
-          <ins class="adsbygoogle"
-               style="display:block;width:100%;height:250px;"
-               data-ad-client="ca-pub-8451876651536601"
-               data-ad-slot="4076493332"
-               data-ad-format="auto"
-               data-full-width-responsive="true"></ins>
-          <div class="ad-modal-ad-placeholder" id="adPlaceholder">
-            광고 로딩 중...
-          </div>
-        </div>
-        
-        <div class="ad-modal-countdown" id="countdown" style="display:none;">
-          <span id="countdownText">5</span>초 후 게임 시작
-        </div>
-      </div>
-      
-      <div class="ad-modal-footer">
-        <button class="ad-modal-btn ad-modal-btn-primary" onclick="startGame()" id="startGameBtn">
-          게임 시작하기
-        </button>
-        <button class="ad-modal-btn ad-modal-btn-secondary" onclick="skipAd()">
-          광고 건너뛰기
-        </button>
-      </div>
+      <button onclick="closeAdModal()">닫기</button>
     </div>
   </div>
-
-  <!-- GitHub DB 스크립트 (우선) -->
-  <script src="../assets/js/github-db.js"></script>
+  
   <!-- SQL API 스크립트 -->
   <script src="../assets/js/sql-api.js"></script>
-  <!-- 관리자 통합 스크립트 (폴백용) -->
-  <script src="../assets/js/admin-integration.js"></script>
   <!-- 포인트 시스템 -->
   <script src="../assets/js/point-system.js"></script>
   
   <script>
-    console.log('스크립트 로드됨!');
+    console.log('룰렛 게임 시작!');
     
-    // GitHub DB 초기화
-    if (typeof GitHubDatabase !== 'undefined') {
-      window.githubDB = new GitHubDatabase();
-      console.log('GitHub DB 초기화됨');
-    }
-    
-    // 로딩 상태 관리
-    let isLoading = true;
-    let isDataLoaded = false;
-    
-    // 경품 데이터 (초기에는 빈 배열, SQL API에서 로드 후 업데이트)
-    let prizes = [];
-    let remaining = 3;
+    // 게임 상태
     let isSpinning = false;
-    let currentRotation = 0;
-    let currentAttempts = 3;
-    const maxAttempts = 3;
-    const spinDuration = 4000; // 4초
+    let remaining = 3;
+    let selectedPrize = null;
+    let prizes = [];
     
-    // GitHub Pages용 기본 상품 데이터
+    // 기본 경품 데이터
     const defaultPrizes = [
-      { id: 1, name: "꽝", probability: 0.3, color: "#ff6b6b" },
-      { id: 2, name: "100원", probability: 0.2, color: "#4ecdc4" },
-      { id: 3, name: "500원", probability: 0.15, color: "#45b7d1" },
-      { id: 4, name: "1000원", probability: 0.1, color: "#96ceb4" },
-      { id: 5, name: "5000원", probability: 0.05, color: "#feca57" },
-      { id: 6, name: "10000원", probability: 0.05, color: "#ff9ff3" },
-      { id: 7, name: "50000원", probability: 0.03, color: "#54a0ff" },
-      { id: 8, name: "100000원", probability: 0.02, color: "#5f27cd" }
+      { name: "100포인트", probability: 30, points: 100 },
+      { name: "200포인트", probability: 25, points: 200 },
+      { name: "500포인트", probability: 20, points: 500 },
+      { name: "1000포인트", probability: 15, points: 1000 },
+      { name: "꽝", probability: 10, points: 0 }
     ];
-
-    // DOM 요소
-    let wheel, canvas, ctx, spinBtn, resultModal, prizeText, closeBtn, remainingText;
     
-    // 포인트 계산 함수
-    function calculatePointReward(prize) {
-      const pointMap = {
-        '꽝': 0,
-        '100원': 10,
-        '500원': 50,
-        '1000원': 100,
-        '5000원': 500,
-        '10000원': 1000,
-        '50000원': 5000,
-        '100000원': 10000
-      };
-      
-      return pointMap[prize.name] || 0;
-    }
+    // DOM 요소들
+    const rouletteWheel = document.getElementById('rouletteWheel');
+    const spinBtn = document.getElementById('spinBtn');
+    const remainingAttempts = document.getElementById('remainingAttempts');
+    const resultModal = document.getElementById('resultModal');
+    const resultPrize = document.getElementById('resultPrize');
+    const adModal = document.getElementById('adModal');
+    const adPlaceholder = document.getElementById('adPlaceholder');
     
-    // spin 함수를 전역으로 선언
-    window.spin = function() {
-      console.log('=== spin() 함수 호출됨! ===');
-      console.log('isSpinning:', isSpinning);
-      console.log('remaining:', remaining);
-      console.log('isLoading:', isLoading);
-      console.log('isDataLoaded:', isDataLoaded);
-      
-      // 데이터 로딩 중이면 대기
-      if (isLoading || !isDataLoaded) {
-        console.log('데이터 로딩 중입니다. 잠시 후 다시 시도해주세요.');
-        return;
-      }
-      
-      // 중복 실행 방지
-      if (isSpinning) {
-        console.log('이미 돌아가는 중입니다');
-        return;
-      }
-      
-      if (remaining <= 0) {
-        console.log('참여 기회가 소진되었습니다');
-        return;
-      }
-      
-      isSpinning = true;
-      if (spinBtn) {
-        spinBtn.disabled = true;
-        spinBtn.textContent = '돌아가는 중...';
-      }
-      
-      const selectedIndex = selectPrize();
-      const selectedPrize = prizes[selectedIndex]; // selectedPrize 변수 정의
-      const sectionAngle = 360 / prizes.length;
-      
-      // 최소 5바퀴 + 선택된 섹션으로 이동
-      const minRotation = 360 * 5;
-      const targetRotation = minRotation + (360 - (selectedIndex * sectionAngle)) - (sectionAngle / 2);
-      currentRotation += targetRotation;
-      
-      console.log('선택된 경품:', selectedPrize.name);
-      console.log('회전 각도:', currentRotation);
-      
-      if (wheel) {
-        // 회전 시작 클래스 추가
-        wheel.classList.remove('stopped');
-        wheel.classList.add('spinning');
-        
-        // 강제 리플로우 후 회전 적용
-        wheel.offsetHeight;
-        wheel.style.transform = `rotate(${currentRotation}deg)`;
-      }
-      
-      // 회전 완료 후 처리
-      setTimeout(() => {
-        console.log('회전 완료, 결과 처리 시작');
-        
-        // 회전 완료 클래스로 변경
-        if (wheel) {
-          wheel.classList.remove('spinning');
-          wheel.classList.add('stopped');
-        }
-        
-        // 상태 초기화
-        isSpinning = false;
-        remaining--;
-        if (remainingText) remainingText.textContent = remaining;
-        
-        // 포인트 지급 로직
-        if (selectedPrize.probability > 0) {
-          // 당첨 시 포인트 지급
-          const pointAmount = calculatePointReward(selectedPrize);
-          if (window.pointSystem) {
-            window.pointSystem.addPoints(pointAmount, `룰렛 당첨: ${selectedPrize.name}`);
-          }
-        } else {
-          // 꽝 시에도 참여 포인트 지급
-          if (window.pointSystem) {
-            window.pointSystem.addPoints(10, '룰렛 참여');
-          }
-        }
-        
-        // 게임 플레이 기록 (SQL API 우선, 폴백)
-        if (window.sqlAdminIntegration) {
-          window.sqlAdminIntegration.recordGamePlay('roulette', {
-            won: selectedPrize.probability > 0,
-            prize: selectedPrize.name,
-            value: selectedPrize.probability > 0 ? 1000 : 0,
-            timestamp: new Date().toISOString()
-          });
-        } else if (window.adminIntegration) {
-          window.adminIntegration.recordGamePlay('roulette', {
-            won: selectedPrize.probability > 0,
-            prize: selectedPrize.name,
-            timestamp: new Date().toISOString()
-          });
-        }
-        
-        // 버튼 상태 업데이트
-        if (remaining > 0) {
-          if (spinBtn) {
-            spinBtn.disabled = false;
-            spinBtn.textContent = '룰렛 돌리기';
-          }
-        } else {
-          if (spinBtn) {
-            spinBtn.textContent = '참여 기회 소진';
-          }
-        }
-        
-        // 결과 표시
-        showResult(selectedPrize.name);
-        console.log('결과 표시 완료');
-      }, spinDuration); // 설정된 회전 시간 사용
-    };
-
-    // 페이지 로드 후 초기화
-    window.addEventListener('DOMContentLoaded', function() {
-      console.log('=== 페이지 로드 시작 ===');
-      
-      wheel = document.getElementById('wheel');
-      canvas = document.getElementById('rouletteCanvas');
-      spinBtn = document.getElementById('spinBtn');
-      resultModal = document.getElementById('resultModal');
-      prizeText = document.getElementById('prizeText');
-      closeBtn = document.getElementById('closeBtn');
-      remainingText = document.getElementById('remaining');
-
-      console.log('wheel:', wheel);
-      console.log('canvas:', canvas);
-      console.log('spinBtn:', spinBtn);
-      
-      if (!canvas) {
-        console.error('Canvas를 찾을 수 없습니다!');
-        return;
-      }
-      
-      ctx = canvas.getContext('2d');
-      console.log('ctx:', ctx);
-
-      // 이벤트 리스너 (룰렛 돌리기 버튼은 onclick으로 처리)
-      console.log('버튼 이벤트 리스너는 onclick으로 처리됨');
-      
-      closeBtn.addEventListener('click', closeModal);
-      resultModal.addEventListener('click', (e) => {
-        if (e.target === resultModal) closeModal();
-      });
-
-      // 룰렛 초기화
-      console.log('룰렛 초기화 시작');
-      createWheel();
-      
-      // 초기 상태 설정
-      if (wheel) {
-        wheel.classList.add('stopped');
-        wheel.classList.remove('spinning');
-      }
-      
-      console.log('=== 초기화 완료 ===');
-    });
-
-    // Canvas 크기 설정
-    function setCanvasSize() {
-      const size = wheel.offsetWidth;
-      canvas.width = size;
-      canvas.height = size;
-      drawWheel();
-    }
-
-    // 룰렛 원판 그리기
-    function drawWheel() {
-      console.log('drawWheel 호출됨, canvas 크기:', canvas.width, 'x', canvas.height);
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const radius = canvas.width / 2;
-      const sectionAngle = (Math.PI * 2) / prizes.length;
-
-      prizes.forEach((prize, index) => {
-        const startAngle = index * sectionAngle - Math.PI / 2;
-        const endAngle = startAngle + sectionAngle;
-
-        // 섹션 그리기
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-        ctx.closePath();
-        ctx.fillStyle = prize.color;
-        ctx.fill();
-        
-        // 테두리
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        // 텍스트
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(startAngle + sectionAngle / 2);
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 16px Pretendard, Arial, sans-serif';
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.fillText(prize.name, radius * 0.6, 5);
-        ctx.restore();
-      });
-      
-      console.log('원판 그리기 완료');
-    }
-
-    // 초기 설정
-    function createWheel() {
-      setTimeout(() => {
-        setCanvasSize();
-        window.addEventListener('resize', setCanvasSize);
-      }, 100);
-    }
-
-    // 데이터 로드 완료 후 UI 표시
-    function showGameUI() {
-      console.log('게임 UI 표시 시작');
-      isLoading = false;
-      isDataLoaded = true;
-      
-      // 로딩 상태 숨기기
-      const loadingState = document.getElementById('loadingState');
-      if (loadingState) {
-        loadingState.style.display = 'none';
-      }
-      
-      // 게임 UI 표시
-      const spinCount = document.getElementById('spinCount');
-      const spinBtn = document.getElementById('spinBtn');
-      
-      if (spinCount) {
-        spinCount.style.display = 'block';
-      }
-      if (spinBtn) {
-        spinBtn.classList.add('loaded');
-      }
-      
-      // 룰렛 다시 그리기
-      if (typeof drawWheel === 'function') {
-        drawWheel();
-      }
-      
-      console.log('게임 UI 표시 완료');
-    }
-
-    // 확률에 따른 경품 선택
-    function selectPrize() {
-      const totalProbability = prizes.reduce((sum, prize) => sum + prize.probability, 0);
-      let random = Math.random() * totalProbability;
-      
-      for (let i = 0; i < prizes.length; i++) {
-        random -= prizes[i].probability;
-        if (random <= 0) {
-          return i;
-        }
-      }
-      return 0;
-    }
-
-
-    // 결과 표시
-    function showResult(prize) {
-      console.log('결과 표시:', prize);
-      if (prizeText) {
-        prizeText.textContent = prize;
-      }
-      if (resultModal) {
-        resultModal.classList.add('show');
-      }
-    }
-
-    // 모달 닫기
-    function closeModal() {
-      console.log('모달 닫기');
-      if (resultModal) {
-        resultModal.classList.remove('show');
-      }
-      
-      // 모달이 닫힌 후 상태 완전 초기화
-      setTimeout(() => {
-        isSpinning = false;
-        console.log('상태 초기화 완료, isSpinning:', isSpinning);
-      }, 100);
-    }
-
-    // Google AdSense 초기화 (중복 방지)
-    console.log('AdSense 초기화 시작');
-    console.log('adsbygoogle 존재:', typeof adsbygoogle !== 'undefined');
+    // 포인트 시스템 초기화
+    let pointSystem = null;
     
-    if (typeof adsbygoogle !== 'undefined' && adsbygoogle.loaded) {
-      console.log('AdSense 이미 로드됨');
-    } else {
-      console.log('AdSense 초기화 시도');
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    }
-
-    // SQL API 설정 적용
-    window.addEventListener('DOMContentLoaded', async function() {
-      console.log('DOM 로드됨, SQL API 설정 적용 시작');
-      
-      // 환경 감지: 로컬 환경에서는 SQL API 사용하지 않음
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      
-      if (isLocalhost) {
-        console.log('로컬 환경 감지: 기본 설정 사용');
-        
-        // 기본 경품 데이터 사용
-        prizes = defaultPrizes;
-        console.log('기본 경품 데이터 사용:', prizes);
-        
-        // localStorage에서 시도 횟수 로드
-        const savedAttempts = localStorage.getItem('rouletteMaxAttempts');
-        if (savedAttempts) {
-          remaining = parseInt(savedAttempts);
-          if (remainingText) {
-            remainingText.textContent = remaining;
-          }
-        } else {
-          remaining = 3; // 기본값
-          if (remainingText) {
-            remainingText.textContent = remaining;
-          }
-        }
-        
-        // 로딩 완료
-        isLoading = false;
-        isDataLoaded = true;
-        showGameUI();
-        console.log('로컬 환경 게임 설정 로딩 완료');
-        return;
-      }
-      
-      // GitHub Pages 환경: GitHub DB 우선 사용
-      console.log('GitHub Pages 환경: GitHub DB 사용 시도');
-      
-      // GitHub DB가 로드될 때까지 대기
-      const checkGitHubDB = async () => {
-        if (window.githubDB) {
-          console.log('GitHub DB 발견, 설정 로드 시도');
-          
-          // GitHub DB 데이터가 준비될 때까지 대기
-          await window.githubDB.waitForData();
-          
-          // GitHub DB에서 룰렛 설정 로드
-          const rouletteSettings = window.githubDB.getGameSettings('roulette');
-          console.log('룰렛 설정 로드됨:', rouletteSettings);
-          
-          if (rouletteSettings && rouletteSettings.prizes) {
-            prizes = rouletteSettings.prizes;
-            console.log('GitHub DB에서 경품 데이터 로드:', prizes);
-          } else {
-            console.log('경품 데이터가 없음, 기본 데이터 사용');
-            prizes = defaultPrizes;
-          }
-          
-          if (rouletteSettings && rouletteSettings.attempts) {
-            remaining = rouletteSettings.attempts;
-            if (remainingText) {
-              remainingText.textContent = remaining;
-            }
-            console.log('GitHub DB에서 시도 횟수 로드:', remaining);
-          } else {
-            console.log('시도 횟수 설정이 없음, 기본값 사용');
-            remaining = 3;
-            if (remainingText) {
-              remainingText.textContent = remaining;
-            }
-          }
-          
-          // 시도 횟수 UI 업데이트
-          if (remainingText) {
-            remainingText.textContent = remaining;
-          }
-          
-          // 로딩 완료
-          isLoading = false;
-          isDataLoaded = true;
-          showGameUI();
-          
-          // 룰렛 휠 다시 그리기
-          if (typeof drawRoulette === 'function') {
-            drawRoulette();
-            console.log('룰렛 휠 다시 그리기 완료');
-          }
-          
-          console.log('GitHub DB 설정 로딩 완료');
-        } else {
-          console.log('GitHub DB 대기 중...');
-          setTimeout(checkGitHubDB, 100);
-        }
-      };
-      
-      checkGitHubDB();
-      return;
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('DOM 로드됨, SQL API로 게임 설정 로딩 시작');
       
       try {
-        // SQL API 존재 확인
-        if (!window.sqlAPI) {
-          throw new Error('SQL API를 사용할 수 없습니다');
+        // SQL API로 게임 설정 로드
+        const rouletteSettings = await window.sqlAPI.getGameSettings('roulette');
+        console.log('룰렛 설정 로드됨:', rouletteSettings);
+        
+        if (rouletteSettings && rouletteSettings.prizes) {
+          prizes = rouletteSettings.prizes;
+          console.log('SQL API에서 경품 데이터 로드:', prizes);
+        } else {
+          console.log('경품 데이터가 없음, 기본 데이터 사용');
+          prizes = defaultPrizes;
         }
         
-        // 사용자 등록
-        await window.sqlAPI.registerUser();
-        console.log('사용자 등록 완료');
-        
-        // SQL API 통합 스크립트가 로드될 때까지 대기
-        const checkSQLIntegration = async () => {
-          if (window.sqlAdminIntegration) {
-            console.log('SQL 통합 스크립트 발견, 설정 적용');
-            await window.sqlAdminIntegration.applyRouletteSettings();
-            
-            // 설정 적용 후 데이터 업데이트
-            setTimeout(() => {
-              if (window.prizeData) {
-                prizes = window.prizeData;
-                console.log('SQL 경품 데이터 적용됨:', prizes);
-              }
-              if (window.maxAttempts) {
-                remaining = window.maxAttempts;
-                console.log('SQL 시도 횟수 적용됨:', remaining);
-                if (remainingText) {
-                  remainingText.textContent = remaining;
-                }
-              }
-              if (window.spinDuration) {
-                console.log('SQL 회전 시간 적용됨:', window.spinDuration);
-              }
-              
-              // 데이터 로드 완료 후 UI 표시
-              showGameUI();
-            }, 100);
-          } else {
-            console.log('SQL 통합 스크립트를 찾을 수 없습니다, 100ms 후 재시도');
-            setTimeout(checkSQLIntegration, 100);
-          }
-        };
-        
-        checkSQLIntegration();
-        
-        // 실시간 설정 감지 시작
-        if (window.sqlAdminIntegration) {
-          window.sqlAdminIntegration.startSettingsWatcher(3000); // 3초 간격
+        if (rouletteSettings && rouletteSettings.attempts) {
+          remaining = rouletteSettings.attempts;
+          console.log('SQL API에서 시도 횟수 로드:', remaining);
+        } else {
+          console.log('시도 횟수 설정이 없음, 기본값 사용');
+          remaining = 3;
         }
+        
+        // 시도 횟수 UI 업데이트
+        if (remainingAttempts) {
+          remainingAttempts.textContent = remaining;
+        }
+        
+        // 포인트 시스템 초기화
+        if (window.PointSystem) {
+          pointSystem = new window.PointSystem();
+          console.log('포인트 시스템 로드됨');
+        }
+        
+        // 룰렛 휠 그리기
+        drawRoulette();
+        console.log('SQL API 게임 설정 로딩 완료');
       } catch (error) {
-        console.error('SQL API 설정 적용 실패:', error);
-        console.log('폴백: 로컬스토리지 방식 사용');
+        console.error('게임 설정 로드 실패:', error);
         
-        // 기본 경품 데이터 사용
+        // 폴백: 기본 설정 사용
         prizes = defaultPrizes;
-        console.log('기본 경품 데이터 사용:', prizes);
-        
-        // localStorage에서 시도 횟수 로드
-        const savedAttempts = localStorage.getItem('rouletteMaxAttempts');
-        if (savedAttempts) {
-          remaining = parseInt(savedAttempts);
-          if (remainingText) {
-            remainingText.textContent = remaining;
-          }
+        remaining = 3;
+        if (remainingAttempts) {
+          remainingAttempts.textContent = remaining;
         }
         
-        showGameUI();
+        drawRoulette();
+        console.log('기본 설정으로 폴백');
       }
     });
-
-    // 관리자 설정 변경 이벤트 리스너
-    window.addEventListener('adminSettingsChanged', function(event) {
-      console.log('관리자 설정 변경 이벤트 수신:', event.detail);
-      if (event.detail.gameType === 'roulette') {
-        const settings = event.detail.settings;
-        
-        // 경품 데이터 업데이트
-        if (settings.prizes && settings.prizes.length > 0) {
-          prizes = settings.prizes.map((prize, index) => ({
-            id: index + 1,
-            name: prize.name,
-            probability: prize.probability,
-            color: prize.color || '#95a5a6'
-          }));
-          console.log('실시간 경품 데이터 업데이트:', prizes);
-          
-          // 룰렛 다시 그리기
-          if (typeof drawRoulette === 'function') {
-            drawRoulette();
-          }
-        }
-        
-        // 시도 횟수 업데이트
-        if (settings.attempts) {
-          remaining = settings.attempts;
-          if (remainingText) {
-            remainingText.textContent = remaining;
-          }
-          console.log('실시간 시도 횟수 업데이트:', remaining);
+    
+    // 룰렛 휠 그리기
+    function drawRoulette() {
+      const wheel = document.getElementById('rouletteWheel');
+      wheel.innerHTML = '<div class="roulette-pointer"></div>';
+      
+      if (prizes.length === 0) return;
+      
+      const segmentAngle = 360 / prizes.length;
+      
+      prizes.forEach((prize, index) => {
+        const segment = document.createElement('div');
+        segment.className = 'roulette-segment';
+        segment.style.transform = `rotate(${index * segmentAngle}deg)`;
+        segment.style.background = prize.color || '#95a5a6';
+        segment.textContent = prize.name;
+        wheel.appendChild(segment);
+      });
+      
+      console.log('룰렛 휠 그리기 완료');
+    }
+    
+    // 룰렛 돌리기
+    function spin() {
+      if (isSpinning || remaining <= 0) return;
+      
+      console.log('룰렛 돌리기 시작');
+      isSpinning = true;
+      spinBtn.disabled = true;
+      spinBtn.textContent = '돌리는 중...';
+      
+      // 룰렛 회전 애니메이션
+      rouletteWheel.classList.add('spinning');
+      
+      // 4초 후 결과 결정
+      setTimeout(() => {
+        selectPrize();
+        rouletteWheel.classList.remove('spinning');
+        showResult();
+        isSpinning = false;
+        spinBtn.disabled = false;
+        spinBtn.textContent = '룰렛 돌리기';
+      }, 4000);
+    }
+    
+    // 경품 선택
+    function selectPrize() {
+      const random = Math.random() * 100;
+      let cumulative = 0;
+      
+      for (let prize of prizes) {
+        cumulative += prize.probability;
+        if (random <= cumulative) {
+          selectedPrize = prize;
+          break;
         }
       }
-    });
+      
+      console.log('선택된 경품:', selectedPrize);
+    }
+    
+    // 결과 표시
+    function showResult() {
+      remaining--;
+      remainingAttempts.textContent = remaining;
+      
+      if (selectedPrize) {
+        resultPrize.textContent = selectedPrize.name;
+        
+        // 포인트 지급
+        if (selectedPrize.points > 0 && pointSystem) {
+          pointSystem.addPoints(selectedPrize.points, `룰렛 게임: ${selectedPrize.name}`);
+          console.log(`${selectedPrize.points}포인트 지급됨`);
+        }
+      }
+      
+      resultModal.style.display = 'block';
+      
+      // 시도 횟수 확인
+      if (remaining <= 0) {
+        setTimeout(() => {
+          spinBtn.textContent = '시도 횟수 초과';
+          spinBtn.disabled = true;
+        }, 1000);
+      }
+    }
+    
+    // 결과 모달 닫기
+    function closeResultModal() {
+      resultModal.style.display = 'none';
+    }
     
     // 광고 모달 표시
     function showAdModal() {
-      console.log('광고 모달 표시');
-      const modal = document.getElementById('adModal');
-      modal.classList.add('show');
+      resultModal.style.display = 'none';
+      adModal.style.display = 'block';
       
-      // 광고 초기화 (모달이 표시된 후)
+      // AdSense 광고 로드
       setTimeout(() => {
         try {
-          if (typeof adsbygoogle !== 'undefined') {
-            console.log('광고 초기화 시도');
-            (adsbygoogle = window.adsbygoogle || []).push({});
-            
-            // 광고 로딩 완료 후 플레이스홀더 숨기기
-            setTimeout(() => {
-              const placeholder = document.getElementById('adPlaceholder');
-              if (placeholder) {
-                placeholder.style.display = 'none';
-                console.log('광고 플레이스홀더 숨김');
-              }
-            }, 2000);
-          } else {
-            console.warn('AdSense 스크립트가 로드되지 않았습니다.');
-            // AdSense 스크립트가 없으면 플레이스홀더 유지
-          }
+          (adsbygoogle = window.adsbygoogle || []).push({});
+          console.log('AdSense 광고 로드됨');
         } catch (error) {
-          console.error('광고 초기화 실패:', error);
+          console.error('AdSense 오류:', error);
         }
       }, 100);
       
-      // 카운트다운은 자동으로 시작하지 않음
-      // 사용자가 "게임 시작하기" 버튼을 눌러야만 시작
+      // 3초 후 광고 완료 처리
+      setTimeout(() => {
+        adPlaceholder.textContent = '광고 시청 완료!';
+        adPlaceholder.style.background = '#d4edda';
+        adPlaceholder.style.color = '#155724';
+      }, 3000);
     }
     
     // 광고 모달 닫기
     function closeAdModal() {
-      const modal = document.getElementById('adModal');
-      modal.classList.remove('show');
-    }
-    
-    // 광고 모달 닫고 스핀 시작
-    function closeAdModalAndSpin() {
-      console.log('X 버튼으로 모달 닫기');
-      closeAdModal();
-      // 모달이 닫힌 후 스핀 시작
-      setTimeout(() => {
-        if (!isSpinning) {
-          spin();
-        }
-      }, 300);
-    }
-    
-    // 카운트다운 시작
-    function startCountdown() {
-      const countdown = document.getElementById('countdown');
-      const countdownText = document.getElementById('countdownText');
-      const startBtn = document.getElementById('startGameBtn');
+      adModal.style.display = 'none';
       
-      countdown.style.display = 'block';
-      startBtn.style.display = 'none';
-      
-      let timeLeft = 5;
-      countdownText.textContent = timeLeft;
-      
-      const timer = setInterval(() => {
-        timeLeft--;
-        countdownText.textContent = timeLeft;
-        
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          // 카운트다운 완료 후 모달 닫고 게임 시작
-          closeAdModal();
-          setTimeout(() => {
-            if (!isSpinning) {
-              spin();
-            }
-          }, 300);
-        }
-      }, 1000);
-    }
-    
-    // 게임 시작
-    function startGame() {
-      console.log('게임 시작!');
-      // 카운트다운 시작
-      startCountdown();
-    }
-    
-    // 광고 건너뛰기
-    function skipAd() {
-      console.log('광고 건너뛰기');
-      closeAdModal();
-      // 모달이 닫힌 후 스핀 시작
-      setTimeout(() => {
-        if (!isSpinning) {
-          spin();
-        }
-      }, 300);
-    }
-    
-    // 광고 클릭 추적
-    function trackAdClick(adType) {
-      console.log('광고 클릭:', adType);
-      // Google Analytics 추적
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'ad_click', {
-          'ad_type': adType,
-          'page': window.location.pathname
-        });
+      // 광고 시청 후 보너스 포인트 지급
+      if (pointSystem) {
+        pointSystem.addPoints(50, '광고 시청 보너스');
+        console.log('광고 시청 보너스 50포인트 지급됨');
       }
+      
+      // 룰렛 돌리기
+      spin();
     }
+    
+    // 전역 함수로 등록
+    window.closeResultModal = closeResultModal;
+    window.showAdModal = showAdModal;
+    window.closeAdModal = closeAdModal;
   </script>
 </body>
 </html>
-
