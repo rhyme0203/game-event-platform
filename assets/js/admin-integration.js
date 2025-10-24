@@ -89,15 +89,18 @@ class AdminIntegration {
   // 룰렛 설정 적용
   applyRouletteSettings() {
     const settings = this.getGameSettings('roulette');
+    console.log('룰렛 설정 가져옴:', settings);
     
     // 시도 횟수 설정
     if (settings.attempts) {
       window.maxAttempts = settings.attempts;
+      console.log('시도 횟수 설정됨:', window.maxAttempts);
     }
 
     // 회전 시간 설정
     if (settings.spinDuration) {
       window.spinDuration = settings.spinDuration * 1000; // 밀리초로 변환
+      console.log('회전 시간 설정됨:', window.spinDuration);
     }
 
     // 경품 데이터 설정
@@ -108,9 +111,10 @@ class AdminIntegration {
         probability: prize.probability,
         color: prize.color || '#95a5a6'
       }));
+      console.log('경품 데이터 설정됨:', window.prizeData);
     }
 
-    console.log('룰렛 설정 적용됨:', settings);
+    console.log('룰렛 설정 적용 완료:', settings);
   }
 
   // 슬롯머신 설정 적용

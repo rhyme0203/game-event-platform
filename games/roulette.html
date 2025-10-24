@@ -179,8 +179,8 @@
   <script>
     console.log('스크립트 로드됨!');
     
-    // 경품 데이터
-    const prizes = [
+    // 경품 데이터 (관리자 설정에서 로드)
+    let prizes = window.prizeData || [
       { name: '1등: 스타벅스 기프티콘', color: '#ff6b6b', probability: 5 },
       { name: '꽝', color: '#95a5a6', probability: 25 },
       { name: '2등: 500 포인트', color: '#4ecdc4', probability: 15 },
@@ -189,7 +189,7 @@
       { name: '4등: 쿠폰 5%', color: '#9b59b6', probability: 10 }
     ];
 
-    let remaining = 3;
+    let remaining = window.maxAttempts || 3;
     let isSpinning = false;
     let currentRotation = 0;
     let currentAttempts = window.maxAttempts || 3;
@@ -400,8 +400,25 @@
 
     // 관리자 설정 적용
     window.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM 로드됨, 관리자 설정 적용 시작');
       if (window.adminIntegration) {
+        console.log('관리자 통합 스크립트 발견, 설정 적용');
         window.adminIntegration.applyRouletteSettings();
+        
+        // 설정 적용 후 데이터 업데이트
+        if (window.prizeData) {
+          prizes = window.prizeData;
+          console.log('관리자 경품 데이터 적용됨:', prizes);
+        }
+        if (window.maxAttempts) {
+          remaining = window.maxAttempts;
+          console.log('관리자 시도 횟수 적용됨:', remaining);
+        }
+        if (window.spinDuration) {
+          console.log('관리자 회전 시간 적용됨:', window.spinDuration);
+        }
+      } else {
+        console.log('관리자 통합 스크립트를 찾을 수 없습니다');
       }
     });
     
