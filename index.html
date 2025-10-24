@@ -25,7 +25,7 @@
     .main-container {
       max-width: 414px;
       margin: 0 auto;
-      background: #f8f9fa;
+      background: white;
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
@@ -122,61 +122,64 @@
       background: #e9ecef;
     }
 
-    /* 게임 그리드 - 모바일 최적화 */
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      padding: 20px;
+    /* 게임 리스트 - 깔끔한 리스트형 */
+    .games-list {
+      padding: 0 20px 20px 20px;
     }
 
     .game-item {
       background: white;
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
       transition: all 0.3s ease;
       cursor: pointer;
       text-decoration: none;
       color: inherit;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border: 1px solid #e9ecef;
-      position: relative;
-      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid #f0f0f0;
     }
 
     .game-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    .game-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transform: translateY(-1px);
     }
 
     .game-icon {
-      font-size: 32px;
-      margin-bottom: 12px;
-      display: block;
+      font-size: 24px;
+      margin-right: 16px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .game-content {
+      flex: 1;
     }
 
     .game-name {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: #333;
     }
 
     .game-desc {
-      font-size: 11px;
+      font-size: 13px;
       color: #666;
       line-height: 1.4;
+    }
+
+    .game-arrow {
+      font-size: 16px;
+      color: #ccc;
+      margin-left: 8px;
     }
 
     /* 출석체크 섹션 */
@@ -208,7 +211,7 @@
     }
 
     .attendance-btn {
-      background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+      background: #007bff;
       color: white;
       border: none;
       border-radius: 8px;
@@ -298,17 +301,6 @@
       <p class="main-subtitle">행운을 잡아라! 다양한 게임으로 상품을 획득하세요</p>
     </div>
 
-    <!-- 포인트 표시 섹션 -->
-    <div class="points-display">
-      <div class="points-info">
-        <span class="points-label">내 포인트</span>
-        <span class="points-amount" id="currentPoints">0P</span>
-      </div>
-      <div class="points-actions">
-        <button class="points-btn" onclick="showPointHistory()">히스토리</button>
-        <button class="points-btn" onclick="goToOfferwall()">적립하기</button>
-      </div>
-    </div>
 
     <!-- 출석체크 섹션 -->
     <div class="attendance-section">
@@ -325,36 +317,51 @@
       </button>
     </div>
 
-    <!-- 게임 그리드 -->
-    <div class="games-grid">
+    <!-- 게임 리스트 -->
+    <div class="games-list">
       <a href="games/roulette.html" class="game-item">
-        <span class="game-icon">🎡</span>
-        <div class="game-name">룰렛</div>
-        <div class="game-desc">돌아가는 룰렛으로 행운의 상품을 받아보세요</div>
+        <div class="game-icon">🎡</div>
+        <div class="game-content">
+          <div class="game-name">룰렛</div>
+          <div class="game-desc">돌아가는 룰렛으로 행운의 상품을 받아보세요</div>
+        </div>
+        <div class="game-arrow">›</div>
       </a>
 
       <a href="games/slot.html" class="game-item">
-        <span class="game-icon">🎰</span>
-        <div class="game-name">슬롯머신</div>
-        <div class="game-desc">3개의 릴을 돌려 같은 그림을 맞춰보세요</div>
+        <div class="game-icon">🎰</div>
+        <div class="game-content">
+          <div class="game-name">슬롯머신</div>
+          <div class="game-desc">3개의 릴을 돌려 같은 그림을 맞춰보세요</div>
+        </div>
+        <div class="game-arrow">›</div>
       </a>
 
       <a href="games/capsule.html" class="game-item">
-        <span class="game-icon">🔮</span>
-        <div class="game-name">캡슐뽑기</div>
-        <div class="game-desc">알록달록한 캡슐 중 하나를 선택해보세요</div>
+        <div class="game-icon">🔮</div>
+        <div class="game-content">
+          <div class="game-name">캡슐뽑기</div>
+          <div class="game-desc">알록달록한 캡슐 중 하나를 선택해보세요</div>
+        </div>
+        <div class="game-arrow">›</div>
       </a>
 
       <a href="games/scratch.html" class="game-item">
-        <span class="game-icon">🎫</span>
-        <div class="game-name">스크래치</div>
-        <div class="game-desc">긁어서 숨겨진 상품을 확인하세요</div>
+        <div class="game-icon">🎫</div>
+        <div class="game-content">
+          <div class="game-name">스크래치</div>
+          <div class="game-desc">긁어서 숨겨진 상품을 확인하세요</div>
+        </div>
+        <div class="game-arrow">›</div>
       </a>
 
-      <a href="offerwall.html" class="game-item" style="background: linear-gradient(135deg, #FFD93D 0%, #FF6B6B 100%); color: white;">
-        <span class="game-icon">💰</span>
-        <div class="game-name">포인트 적립</div>
-        <div class="game-desc">미션을 완료하고 포인트를 모아보세요</div>
+      <a href="offerwall.html" class="game-item">
+        <div class="game-icon">💰</div>
+        <div class="game-content">
+          <div class="game-name">포인트 적립</div>
+          <div class="game-desc">미션을 완료하고 포인트를 모아보세요</div>
+        </div>
+        <div class="game-arrow">›</div>
       </a>
     </div>
 

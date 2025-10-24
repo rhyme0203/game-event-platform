@@ -30,30 +30,9 @@ class PointSystem {
     localStorage.setItem('pointHistory', JSON.stringify(this.history));
   }
 
-  // UI 생성
+  // UI 생성 (플로팅 UI 제거)
   createUI() {
-    // 포인트 시스템 컨테이너
-    const pointContainer = document.createElement('div');
-    pointContainer.className = 'point-system';
-    pointContainer.id = 'pointSystem';
-    
-    pointContainer.innerHTML = `
-      <div class="point-header">
-        <div class="point-title">
-          <span class="point-icon">💰</span>
-          내 포인트
-        </div>
-      </div>
-      <div class="point-amount" id="pointAmount">${this.points.toLocaleString()}P</div>
-      <div class="point-actions">
-        <button class="point-btn" id="historyBtn">히스토리</button>
-        <button class="point-btn" id="resetBtn">초기화</button>
-      </div>
-    `;
-    
-    document.body.appendChild(pointContainer);
-    
-    // 히스토리 모달
+    // 히스토리 모달만 생성
     const historyModal = document.createElement('div');
     historyModal.className = 'point-history-modal';
     historyModal.id = 'historyModal';
@@ -73,13 +52,8 @@ class PointSystem {
     document.body.appendChild(historyModal);
   }
 
-  // 이벤트 바인딩
+  // 이벤트 바인딩 (플로팅 UI 제거)
   bindEvents() {
-    // 히스토리 버튼
-    document.getElementById('historyBtn').addEventListener('click', () => {
-      this.showHistory();
-    });
-    
     // 히스토리 닫기 버튼
     document.getElementById('closeHistoryBtn').addEventListener('click', () => {
       this.hideHistory();
@@ -89,13 +63,6 @@ class PointSystem {
     document.getElementById('historyModal').addEventListener('click', (e) => {
       if (e.target.id === 'historyModal') {
         this.hideHistory();
-      }
-    });
-    
-    // 초기화 버튼
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (confirm('정말로 포인트를 초기화하시겠습니까?')) {
-        this.resetPoints();
       }
     });
   }
