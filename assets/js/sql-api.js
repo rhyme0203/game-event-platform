@@ -153,6 +153,26 @@ class SQLAPI {
     }
   }
 
+  // 게임 설정 저장
+  async saveGameSettings(gameId, settings) {
+    try {
+      const response = await fetch(`${this.baseUrl}/games/${gameId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(settings)
+      });
+
+      const result = await response.json();
+      console.log('게임 설정 저장됨:', result);
+      return result;
+    } catch (error) {
+      console.error('게임 설정 저장 실패:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
   // 헬스 체크
   async healthCheck() {
     try {

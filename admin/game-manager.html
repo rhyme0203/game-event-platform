@@ -353,6 +353,9 @@
   </div>
 
   <!-- 데이터베이스 및 API 스크립트 -->
+  <!-- SQL API 스크립트 -->
+  <script src="../assets/js/sql-api.js"></script>
+  <!-- 로컬스토리지 API (폴백용) -->
   <script src="database.js"></script>
   <script src="api.js"></script>
   
@@ -445,7 +448,19 @@
     async function loadGameSettings(gameType) {
       try {
         console.log('게임 설정 로드 시작:', gameType);
-        const response = await window.adminAPI.getGameSettings(gameType);
+        
+        // SQL API 우선 시도
+        let response;
+        if (window.sqlAPI) {
+          console.log('SQL API 사용');
+          response = await window.sqlAPI.getGameSettings(gameType);
+        } else if (window.adminAPI) {
+          console.log('로컬스토리지 API 사용');
+          response = await window.adminAPI.getGameSettings(gameType);
+        } else {
+          throw new Error('사용 가능한 API가 없습니다.');
+        }
+        
         console.log('API 응답:', response);
         if (response.success) {
           const settings = response.data;
@@ -566,8 +581,17 @@
           settings.prizes = collectPrizes('scratch');
         }
 
-        // API를 통해 저장
-        const response = await window.adminAPI.saveGameSettings(currentGame, settings);
+        // API를 통해 저장 (SQL API 우선)
+        let response;
+        if (window.sqlAPI) {
+          console.log('SQL API로 저장');
+          response = await window.sqlAPI.saveGameSettings(currentGame, settings);
+        } else if (window.adminAPI) {
+          console.log('로컬스토리지 API로 저장');
+          response = await window.adminAPI.saveGameSettings(currentGame, settings);
+        } else {
+          throw new Error('사용 가능한 API가 없습니다.');
+        }
         
         if (response.success) {
           alert(`${getGameName(currentGame)} 설정이 저장되었습니다!`);
