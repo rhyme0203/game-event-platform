@@ -23,6 +23,7 @@ package-lock.json
 # SQLite 데이터베이스 파일 (로컬 개발용)
 backend/database/game_platform.db
 backend/database/*.db
+backend/database/*.backup.*
 
 # Node.js 의존성
 backend/node_modules/
