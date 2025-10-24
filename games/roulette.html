@@ -20,25 +20,41 @@
       padding: 0;
     }
 
+    .game-container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
     .roulette-container {
       position: relative;
-      width: 400px;
-      height: 400px;
-      margin: 0 auto;
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
     }
 
     .roulette-wheel {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      position: relative;
-      transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
       border: 8px solid #333;
-      overflow: hidden;
+      position: relative;
+      background: conic-gradient(
+        #ff6b6b 0deg 45deg,
+        #4ecdc4 45deg 90deg,
+        #45b7d1 90deg 135deg,
+        #96ceb4 135deg 180deg,
+        #feca57 180deg 225deg,
+        #ff9ff3 225deg 270deg,
+        #54a0ff 270deg 315deg,
+        #5f27cd 315deg 360deg
+      );
+      transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
     .roulette-wheel.spinning {
-      animation: spin 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+      animation: spin 3s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
     @keyframes spin {
@@ -59,37 +75,39 @@
       z-index: 10;
     }
 
-    .roulette-segment {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      transform-origin: 100% 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: white;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-      font-size: 12px;
-      text-align: center;
-      padding: 10px;
-      box-sizing: border-box;
-    }
-
-    .info-section {
+    .prize-section {
       margin: 20px 0;
-      text-align: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
     }
 
-    .attempts-info {
-      font-size: 18px;
-      margin: 15px 0;
+    .prize-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .prize-item:last-child {
+      border-bottom: none;
+    }
+
+    .prize-name {
+      font-weight: bold;
       color: #333;
     }
 
-    .attempts-number {
-      color: #667eea;
-      font-weight: bold;
+    .prize-probability {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .attempts-info {
+      margin: 15px 0;
+      font-size: 16px;
+      color: #333;
     }
 
     .start-button {
@@ -207,13 +225,16 @@
       </div>
     </div>
     
-    <div class="info-section">
-      <div class="attempts-info">
-        남은 기회: <span class="attempts-number" id="remainingAttempts">3</span>회
-      </div>
-      
-      <button class="start-button" id="spinBtn" onclick="showAdModal()">룰렛 돌리기</button>
+    <div class="prize-section">
+      <h3>🎁 경품 목록</h3>
+      <div id="prizeList"></div>
     </div>
+    
+    <div class="attempts-info">
+      남은 시도 횟수: <span id="remainingAttempts">3</span>회
+    </div>
+    
+    <button class="start-button" id="spinBtn">룰렛 돌리기</button>
   </div>
   
   <!-- 결과 모달 -->
@@ -266,6 +287,7 @@
     const rouletteWheel = document.getElementById('rouletteWheel');
     const spinBtn = document.getElementById('spinBtn');
     const remainingAttempts = document.getElementById('remainingAttempts');
+    const prizeList = document.getElementById('prizeList');
     const resultModal = document.getElementById('resultModal');
     const resultPrize = document.getElementById('resultPrize');
     const adModal = document.getElementById('adModal');
@@ -310,8 +332,8 @@
           console.log('포인트 시스템 로드됨');
         }
         
-        // 룰렛 휠 그리기
-        drawRoulette();
+        // 경품 목록 표시
+        displayPrizes();
         console.log('SQL API 게임 설정 로딩 완료');
       } catch (error) {
         console.error('게임 설정 로드 실패:', error);
@@ -323,30 +345,23 @@
           remainingAttempts.textContent = remaining;
         }
         
-        drawRoulette();
+        displayPrizes();
         console.log('기본 설정으로 폴백');
       }
     });
     
-    // 룰렛 휠 그리기
-    function drawRoulette() {
-      const wheel = document.getElementById('rouletteWheel');
-      wheel.innerHTML = '<div class="roulette-pointer"></div>';
-      
-      if (prizes.length === 0) return;
-      
-      const segmentAngle = 360 / prizes.length;
-      
-      prizes.forEach((prize, index) => {
-        const segment = document.createElement('div');
-        segment.className = 'roulette-segment';
-        segment.style.transform = `rotate(${index * segmentAngle}deg)`;
-        segment.style.background = prize.color || '#95a5a6';
-        segment.textContent = prize.name;
-        wheel.appendChild(segment);
+    // 경품 목록 표시
+    function displayPrizes() {
+      prizeList.innerHTML = '';
+      prizes.forEach(prize => {
+        const prizeItem = document.createElement('div');
+        prizeItem.className = 'prize-item';
+        prizeItem.innerHTML = `
+          <span class="prize-name">${prize.name}</span>
+          <span class="prize-probability">${prize.probability}%</span>
+        `;
+        prizeList.appendChild(prizeItem);
       });
-      
-      console.log('룰렛 휠 그리기 완료');
     }
     
     // 룰렛 돌리기
@@ -361,7 +376,7 @@
       // 룰렛 회전 애니메이션
       rouletteWheel.classList.add('spinning');
       
-      // 4초 후 결과 결정
+      // 3초 후 결과 결정
       setTimeout(() => {
         selectPrize();
         rouletteWheel.classList.remove('spinning');
@@ -369,7 +384,7 @@
         isSpinning = false;
         spinBtn.disabled = false;
         spinBtn.textContent = '룰렛 돌리기';
-      }, 4000);
+      }, 3000);
     }
     
     // 경품 선택
@@ -455,6 +470,9 @@
       // 룰렛 돌리기
       spin();
     }
+    
+    // 이벤트 리스너 등록
+    spinBtn.addEventListener('click', showAdModal);
     
     // 전역 함수로 등록
     window.closeResultModal = closeResultModal;
