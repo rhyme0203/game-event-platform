@@ -20,28 +20,12 @@
       position: relative;
       transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
       box-shadow: 0 0 0 15px #fff, 0 0 0 18px var(--primary-color), 0 10px 50px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
     }
 
-    .roulette-section {
-      position: absolute;
-      width: 50%;
-      height: 50%;
-      transform-origin: 100% 100%;
-      clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 14px;
-      color: white;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .roulette-section span {
-      position: absolute;
-      top: 30%;
-      left: 60%;
-      transform: rotate(-22.5deg);
+    .roulette-canvas {
+      width: 100%;
+      height: 100%;
     }
 
     .roulette-pin {
@@ -98,9 +82,6 @@
         height: 60px;
         font-size: 28px;
       }
-      .roulette-section {
-        font-size: 11px;
-      }
     }
   </style>
 </head>
@@ -114,7 +95,7 @@
         <div class="roulette-container">
           <div class="roulette-pin"></div>
           <div class="roulette-wheel" id="wheel">
-            <!-- 룰렛 섹션들이 JavaScript로 생성됩니다 -->
+            <canvas id="rouletteCanvas" class="roulette-canvas"></canvas>
           </div>
           <div class="roulette-center">🎁</div>
         </div>
@@ -162,27 +143,66 @@
     let currentRotation = 0;
 
     const wheel = document.getElementById('wheel');
+    const canvas = document.getElementById('rouletteCanvas');
+    const ctx = canvas.getContext('2d');
     const spinBtn = document.getElementById('spinBtn');
     const resultModal = document.getElementById('resultModal');
     const prizeText = document.getElementById('prizeText');
     const closeBtn = document.getElementById('closeBtn');
     const remainingText = document.getElementById('remaining');
 
-    // 룰렛 휠 생성
-    function createWheel() {
-      const sectionAngle = 360 / prizes.length;
+    // Canvas 크기 설정
+    function setCanvasSize() {
+      const size = wheel.offsetWidth;
+      canvas.width = size;
+      canvas.height = size;
+      drawWheel();
+    }
+
+    // 룰렛 원판 그리기
+    function drawWheel() {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = canvas.width / 2;
+      const sectionAngle = (Math.PI * 2) / prizes.length;
+
       prizes.forEach((prize, index) => {
-        const section = document.createElement('div');
-        section.className = 'roulette-section';
-        section.style.transform = `rotate(${index * sectionAngle}deg)`;
-        section.style.backgroundColor = prize.color;
+        const startAngle = index * sectionAngle - Math.PI / 2;
+        const endAngle = startAngle + sectionAngle;
+
+        // 섹션 그리기
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = prize.color;
+        ctx.fill();
         
-        const text = document.createElement('span');
-        text.textContent = prize.name;
-        section.appendChild(text);
-        
-        wheel.appendChild(section);
+        // 테두리
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // 텍스트
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(startAngle + sectionAngle / 2);
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px Pretendard, Arial, sans-serif';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+        ctx.fillText(prize.name, radius * 0.6, 5);
+        ctx.restore();
       });
+    }
+
+    // 초기 설정
+    function createWheel() {
+      setCanvasSize();
+      window.addEventListener('resize', setCanvasSize);
     }
 
     // 확률에 따른 경품 선택
