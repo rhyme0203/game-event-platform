@@ -21,10 +21,10 @@ class AdminIntegration {
         return;
       }
       
-      // GitHub DB 사용 시도
+      // GitHub DB 사용 시도 (로컬스토리지만 사용)
       if (window.githubDB) {
         this.adminData = await window.githubDB.getDatabase();
-        console.log('GitHub 관리자 설정 로드됨:', this.adminData);
+        console.log('로컬 관리자 설정 로드됨:', this.adminData);
         return;
       }
       
