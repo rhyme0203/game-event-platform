@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스크래치 이벤트</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <style>
+    .scratch-area {
+      position: relative;
+      max-width: 400px;
+      margin: 40px auto;
+    }
+
+    .scratch-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3/2;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .prize-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+    }
+
+    .prize-emoji {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .prize-name {
+      font-size: 1.8em;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #scratchCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    #scratchCanvas:active {
+      cursor: grabbing;
+    }
+
+    .scratch-instruction {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1.1em;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #999;
+    }
+
+    @media (max-width: 600px) {
+      .prize-emoji {
+        font-size: 60px;
+      }
+      .prize-name {
+        font-size: 1.4em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="game-card">
+      <h1>🎫 스크래치 카드</h1>
+      <p class="subtitle">긁어서 경품을 확인하세요!</p>
+
+      <div class="game-area">
+        <div class="scratch-area">
+          <div class="scratch-card">
+            <div class="prize-layer" id="prizeLayer">
+              <div class="prize-emoji" id="prizeEmoji">🎁</div>
+              <div class="prize-name" id="prizeName">???</div>
+            </div>
+            <canvas id="scratchCanvas"></canvas>
+          </div>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text">
+            긁은 정도: <span id="progressText">0</span>%
+          </div>
+        </div>
+
+        <div class="scratch-instruction">
+          👆 카드를 손가락이나 마우스로 긁어주세요
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p><strong>참여 방법</strong></p>
+        <p>회색 영역을 긁어서 숨겨진 경품을 확인하세요.</p>
+        <p>70% 이상 긁으면 자동으로 결과가 표시됩니다!</p>
+      </div>
+
+      <a href="../index.html" class="back-link">← 메인으로 돌아가기</a>
+    </div>
+  </div>
+
+  <!-- 결과 모달 -->
+  <div class="result-modal" id="resultModal">
+    <div class="result-content">
+      <div class="result-icon" id="resultIcon">🎉</div>
+      <div class="result-title">당첨!</div>
+      <div class="result-prize" id="resultText"></div>
+      <button class="close-button" id="closeBtn">확인</button>
+    </div>
+  </div>
+
+  <script>
+    const prizes = [
+      { name: '🎊 대박! 50,000원 상품권', emoji: '💎', isJackpot: true },
+      { name: '축하합니다! 10,000원 상품권', emoji: '🎁', isJackpot: false },
+      { name: '당첨! 5,000 포인트', emoji: '⭐', isJackpot: false },
+      { name: '축하해요! 3,000 포인트', emoji: '🎫', isJackpot: false },
+      { name: '당첨! 1,000 포인트', emoji: '🎪', isJackpot: false },
+      { name: '500 포인트 획득!', emoji: '🎯', isJackpot: false },
+      { name: '아쉽네요. 다음 기회에!', emoji: '😢', isJackpot: false }
+    ];
+
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    const prizeEmoji = document.getElementById('prizeEmoji');
+    const prizeName = document.getElementById('prizeName');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const resultModal = document.getElementById('resultModal');
+    const resultIcon = document.getElementById('resultIcon');
+    const resultText = document.getElementById('resultText');
+    const closeBtn = document.getElementById('closeBtn');
+
+    let isDrawing = false;
+    let isRevealed = false;
+    let selectedPrize;
+
+    // 캔버스 초기화
+    function initCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      // 은색 스크래치 레이어
+      ctx.fillStyle = '#c0c0c0';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 텍스트
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('여기를 긁어주세요!', canvas.width / 2, canvas.height / 2 - 20);
+      
+      ctx.font = '50px Arial';
+      ctx.fillText('🎁', canvas.width / 2, canvas.height / 2 + 30);
+    }
+
+    // 경품 선택
+    function selectPrize() {
+      const randomIndex = Math.floor(Math.random() * prizes.length);
+      selectedPrize = prizes[randomIndex];
+      prizeName.textContent = selectedPrize.name;
+      prizeEmoji.textContent = selectedPrize.emoji;
+    }
+
+    // 스크래치 그리기
+    function scratch(x, y) {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, 30, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    // 긁은 정도 계산
+    function calculateProgress() {
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+      let transparentPixels = 0;
+
+      for (let i = 3; i < pixels.length; i += 4) {
+        if (pixels[i] === 0) {
+          transparentPixels++;
+        }
+      }
+
+      const progress = Math.floor((transparentPixels / (pixels.length / 4)) * 100);
+      progressFill.style.width = progress + '%';
+      progressText.textContent = progress;
+
+      // 70% 이상 긁으면 자동 완료
+      if (progress > 70 && !isRevealed) {
+        revealPrize();
+      }
+    }
+
+    // 경품 완전히 드러내기
+    function revealPrize() {
+      isRevealed = true;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      progressFill.style.width = '100%';
+      progressText.textContent = '100';
+      
+      setTimeout(() => {
+        showResult();
+      }, 500);
+    }
+
+    // 결과 모달 표시
+    function showResult() {
+      resultIcon.textContent = selectedPrize.emoji;
+      resultText.textContent = selectedPrize.name;
+      resultModal.classList.add('show');
+    }
+
+    // 모달 닫기 및 리셋
+    function closeModal() {
+      resultModal.classList.remove('show');
+      setTimeout(() => {
+        resetGame();
+      }, 300);
+    }
+
+    // 게임 리셋
+    function resetGame() {
+      isRevealed = false;
+      progressFill.style.width = '0%';
+      progressText.textContent = '0';
+      selectPrize();
+      initCanvas();
+    }
+
+    // 마우스 이벤트
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      scratch(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing || isRevealed) return;
+      const rect = canvas.getBoundingClientRect();
+      scratch(e.clientX - rect.left, e.clientY - rect.top);
+      calculateProgress();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      isDrawing = false;
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      isDrawing = false;
+    });
+
+    // 터치 이벤트
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      scratch(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (!isDrawing || isRevealed) return;
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      scratch(touch.clientX - rect.left, touch.clientY - rect.top);
+      calculateProgress();
+    });
+
+    canvas.addEventListener('touchend', () => {
+      isDrawing = false;
+    });
+
+    // 이벤트 리스너
+    closeBtn.addEventListener('click', closeModal);
+    resultModal.addEventListener('click', (e) => {
+      if (e.target === resultModal) closeModal();
+    });
+
+    // 초기화
+    selectPrize();
+    initCanvas();
+
+    // 리사이즈 대응
+    window.addEventListener('resize', () => {
+      if (!isRevealed) {
+        initCanvas();
+      }
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>슬롯머신 이벤트</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <style>
+    .slot-machine {
+      background: linear-gradient(145deg, #2c3e50, #34495e);
+      border-radius: 30px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      max-width: 450px;
+      margin: 0 auto;
+    }
+
+    .slot-display {
+      background: #1a1a1a;
+      border-radius: 20px;
+      padding: 30px 20px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.8);
+    }
+
+    .slot-reel {
+      width: 100px;
+      height: 120px;
+      background: white;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .slot-symbols {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      width: 100%;
+      transition: transform 0.1s linear;
+    }
+
+    .slot-symbol {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      user-select: none;
+    }
+
+    .slot-lever {
+      width: 60px;
+      height: 120px;
+      background: linear-gradient(145deg, #e74c3c, #c0392b);
+      border-radius: 30px;
+      margin: 0 auto 30px;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .slot-lever:hover:not(.pulling) {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .slot-lever.pulling {
+      transform: translateY(20px);
+    }
+
+    .slot-lever::before {
+      content: '⬇️';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+    }
+
+    .jackpot-text {
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #f1c40f;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+    }
+
+    .prize-list {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .prize-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      color: white;
+      font-size: 0.95em;
+    }
+
+    .prize-symbols {
+      font-size: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .slot-machine {
+        padding: 30px 20px;
+      }
+      .slot-reel {
+        width: 80px;
+        height: 100px;
+      }
+      .slot-symbol {
+        height: 100px;
+        font-size: 48px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="game-card">
+      <h1>🎰 슬롯머신</h1>
+      <p class="subtitle">3개의 그림을 맞춰보세요!</p>
+
+      <div class="game-area">
+        <div class="slot-machine">
+          <div class="jackpot-text">🌟 JACKPOT 🌟</div>
+          
+          <div class="slot-display">
+            <div class="slot-reel">
+              <div class="slot-symbols" id="reel1"></div>
+            </div>
+            <div class="slot-reel">
+              <div class="slot-symbols" id="reel2"></div>
+            </div>
+            <div class="slot-reel">
+              <div class="slot-symbols" id="reel3"></div>
+            </div>
+          </div>
+
+          <div class="slot-lever" id="lever"></div>
+
+          <div class="prize-list">
+            <div class="prize-item">
+              <span class="prize-symbols">🍒 🍒 🍒</span>
+              <span>5,000 포인트</span>
+            </div>
+            <div class="prize-item">
+              <span class="prize-symbols">🍋 🍋 🍋</span>
+              <span>3,000 포인트</span>
+            </div>
+            <div class="prize-item">
+              <span class="prize-symbols">🍊 🍊 🍊</span>
+              <span>2,000 포인트</span>
+            </div>
+            <div class="prize-item">
+              <span class="prize-symbols">⭐ ⭐ ⭐</span>
+              <span>1,000 포인트</span>
+            </div>
+            <div class="prize-item">
+              <span class="prize-symbols">동일 2개</span>
+              <span>500 포인트</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p><strong>게임 방법</strong></p>
+        <p>레버를 당겨 슬롯을 돌리고, 같은 그림을 맞추면 포인트를 획득합니다!</p>
+        <p>3개를 모두 맞추면 대박!</p>
+      </div>
+
+      <a href="../index.html" class="back-link">← 메인으로 돌아가기</a>
+    </div>
+  </div>
+
+  <!-- 결과 모달 -->
+  <div class="result-modal" id="resultModal">
+    <div class="result-content">
+      <div class="result-icon" id="resultIcon">🎉</div>
+      <div class="result-title" id="resultTitle">축하합니다!</div>
+      <div class="result-prize" id="prizeText"></div>
+      <button class="close-button" id="closeBtn">확인</button>
+    </div>
+  </div>
+
+  <script>
+    const symbols = ['🍒', '🍋', '🍊', '⭐', '🍇', '🍉', '💎', '🎰'];
+    const prizes = {
+      '🍒🍒🍒': '5,000 포인트',
+      '🍋🍋🍋': '3,000 포인트',
+      '🍊🍊🍊': '2,000 포인트',
+      '⭐⭐⭐': '1,000 포인트',
+      '🍇🍇🍇': '1,000 포인트',
+      '🍉🍉🍉': '1,000 포인트',
+      '💎💎💎': '10,000 포인트 (JACKPOT!)',
+      '🎰🎰🎰': '10,000 포인트 (JACKPOT!)'
+    };
+
+    let isSpinning = false;
+    const lever = document.getElementById('lever');
+    const resultModal = document.getElementById('resultModal');
+    const resultIcon = document.getElementById('resultIcon');
+    const resultTitle = document.getElementById('resultTitle');
+    const prizeText = document.getElementById('prizeText');
+    const closeBtn = document.getElementById('closeBtn');
+
+    // 릴 초기화
+    function initReels() {
+      for (let i = 1; i <= 3; i++) {
+        const reel = document.getElementById(`reel${i}`);
+        // 여러 심볼 생성 (스크롤 효과용)
+        for (let j = 0; j < 30; j++) {
+          const symbol = document.createElement('div');
+          symbol.className = 'slot-symbol';
+          symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+          reel.appendChild(symbol);
+        }
+      }
+    }
+
+    // 슬롯 돌리기
+    function spin() {
+      if (isSpinning) return;
+      
+      isSpinning = true;
+      lever.classList.add('pulling');
+      
+      setTimeout(() => {
+        lever.classList.remove('pulling');
+      }, 300);
+
+      const results = [];
+      const durations = [2000, 2500, 3000];
+
+      for (let i = 1; i <= 3; i++) {
+        const reel = document.getElementById(`reel${i}`);
+        const duration = durations[i - 1];
+        
+        // 릴 회전 애니메이션
+        let distance = 0;
+        const interval = setInterval(() => {
+          distance += 20;
+          reel.style.transform = `translateY(-${distance}px)`;
+        }, 16);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          
+          // 최종 결과 심볼 선택
+          const finalSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+          results.push(finalSymbol);
+          
+          // 최종 위치로 스냅
+          const symbolHeight = 120;
+          const finalPosition = Math.floor(distance / symbolHeight) * symbolHeight;
+          reel.style.transform = `translateY(-${finalPosition}px)`;
+          
+          // 최종 심볼을 해당 위치에 배치
+          const finalIndex = Math.floor(finalPosition / symbolHeight);
+          if (reel.children[finalIndex]) {
+            reel.children[finalIndex].textContent = finalSymbol;
+          }
+          
+          if (i === 3) {
+            setTimeout(() => {
+              checkResults(results);
+            }, 500);
+          }
+        }, duration);
+      }
+    }
+
+    // 결과 확인
+    function checkResults(results) {
+      isSpinning = false;
+      
+      const key = results.join('');
+      let prize = '';
+      let icon = '🎉';
+      let title = '축하합니다!';
+
+      if (prizes[key]) {
+        // 3개 모두 일치
+        prize = prizes[key];
+        if (key.includes('💎') || key.includes('🎰')) {
+          icon = '💎';
+          title = 'JACKPOT!!!';
+        }
+      } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+        // 2개 일치
+        prize = '500 포인트';
+      } else {
+        // 꽝
+        prize = '아쉽게도 다음 기회에...';
+        icon = '😢';
+        title = '아쉽네요!';
+      }
+
+      showResult(icon, title, prize);
+    }
+
+    // 결과 표시
+    function showResult(icon, title, prize) {
+      resultIcon.textContent = icon;
+      resultTitle.textContent = title;
+      prizeText.textContent = prize;
+      resultModal.classList.add('show');
+    }
+
+    // 모달 닫기
+    function closeModal() {
+      resultModal.classList.remove('show');
+    }
+
+    // 이벤트 리스너
+    lever.addEventListener('click', spin);
+    closeBtn.addEventListener('click', closeModal);
+    resultModal.addEventListener('click', (e) => {
+      if (e.target === resultModal) closeModal();
+    });
+
+    // 초기화
+    initReels();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게임형 이벤트 플랫폼 - 데모</title>
+  <link rel="stylesheet" href="assets/css/common.css">
+  <style>
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+      max-width: 1200px;
+      width: 90%;
+    }
+
+    .game-item {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .game-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .game-name {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .game-desc {
+      color: #666;
+      font-size: 1em;
+      line-height: 1.5;
+    }
+
+    .hero {
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      color: white;
+      font-size: 3.5em;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero p {
+      font-size: 1.3em;
+      opacity: 0.95;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .features {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .feature-badge {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 0.9em;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>🎮 게임형 이벤트 플랫폼</h1>
+    <p>고객 참여를 높이는 재미있는 게임형 이벤트를 경험해보세요</p>
+    <div class="features">
+      <span class="feature-badge">✨ 다양한 게임</span>
+      <span class="feature-badge">🎨 커스터마이징</span>
+      <span class="feature-badge">📊 실시간 분석</span>
+      <span class="feature-badge">🚀 쉬운 임베딩</span>
+    </div>
+  </div>
+
+  <div class="games-grid">
+    <a href="games/roulette.html" class="game-item">
+      <span class="game-icon">🎡</span>
+      <div class="game-name">룰렛</div>
+      <div class="game-desc">돌아가는 룰렛으로 행운의 상품을 받아보세요</div>
+    </a>
+
+    <a href="games/slot.html" class="game-item">
+      <span class="game-icon">🎰</span>
+      <div class="game-name">슬롯머신</div>
+      <div class="game-desc">3개의 릴을 돌려 같은 그림을 맞춰보세요</div>
+    </a>
+
+    <a href="games/capsule.html" class="game-item">
+      <span class="game-icon">🔮</span>
+      <div class="game-name">캡슐뽑기</div>
+      <div class="game-desc">알록달록한 캡슐 중 하나를 선택해보세요</div>
+    </a>
+
+    <a href="games/scratch.html" class="game-item">
+      <span class="game-icon">🎫</span>
+      <div class="game-name">스크래치</div>
+      <div class="game-desc">긁어서 숨겨진 상품을 확인하세요</div>
+    </a>
+  </div>
+
+  <div class="info-box" style="margin-top: 60px; max-width: 800px; background: rgba(255,255,255,0.9);">
+    <h3 style="margin-bottom: 15px; color: var(--primary-color);">💡 이런 기능들을 제공합니다</h3>
+    <ul style="text-align: left; line-height: 2; list-style: none; padding: 0;">
+      <li>✅ 다양한 게임 타입 지원 (룰렛, 슬롯, 캡슐, 스크래치 등)</li>
+      <li>✅ 브랜드 맞춤 커스터마이징 (컬러, 폰트, 로고)</li>
+      <li>✅ 이벤트 기간 및 참여 조건 설정</li>
+      <li>✅ 리워드 확률 및 수량 관리</li>
+      <li>✅ 참여자 데이터 수집 및 분석</li>
+      <li>✅ 중복 참여 방지 (IP, 전화번호, 쿠키)</li>
+      <li>✅ 간편한 웹사이트/앱 임베딩</li>
+    </ul>
+  </div>
+</body>
+</html>
+

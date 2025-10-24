@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>룰렛 이벤트</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <style>
+    .roulette-container {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      margin: 0 auto;
+    }
+
+    .roulette-wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+      box-shadow: 0 0 0 15px #fff, 0 0 0 18px var(--primary-color), 0 10px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .roulette-section {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      transform-origin: 100% 100%;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .roulette-section span {
+      position: absolute;
+      top: 30%;
+      left: 60%;
+      transform: rotate(-22.5deg);
+    }
+
+    .roulette-pin {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 35px solid var(--danger-color);
+      z-index: 10;
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+    }
+
+    .roulette-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      z-index: 5;
+    }
+
+    .spin-count {
+      margin-top: 30px;
+      font-size: 1.1em;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .spin-count span {
+      color: var(--primary-color);
+      font-size: 1.3em;
+      font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+      .roulette-container {
+        width: 300px;
+        height: 300px;
+      }
+      .roulette-center {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+      }
+      .roulette-section {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="game-card">
+      <h1>🎡 행운의 룰렛</h1>
+      <p class="subtitle">룰렛을 돌려 경품을 받아가세요!</p>
+
+      <div class="game-area">
+        <div class="roulette-container">
+          <div class="roulette-pin"></div>
+          <div class="roulette-wheel" id="wheel">
+            <!-- 룰렛 섹션들이 JavaScript로 생성됩니다 -->
+          </div>
+          <div class="roulette-center">🎁</div>
+        </div>
+        
+        <div class="spin-count">
+          남은 기회: <span id="remaining">3</span>회
+        </div>
+      </div>
+
+      <button class="start-button" id="spinBtn">룰렛 돌리기</button>
+
+      <div class="info-box">
+        <p><strong>참여 방법</strong></p>
+        <p>버튼을 눌러 룰렛을 돌리면 자동으로 경품이 추첨됩니다.</p>
+        <p>하루 3회까지 참여 가능합니다.</p>
+      </div>
+
+      <a href="../index.html" class="back-link">← 메인으로 돌아가기</a>
+    </div>
+  </div>
+
+  <!-- 결과 모달 -->
+  <div class="result-modal" id="resultModal">
+    <div class="result-content">
+      <div class="result-icon">🎉</div>
+      <div class="result-title">축하합니다!</div>
+      <div class="result-prize" id="prizeText"></div>
+      <button class="close-button" id="closeBtn">확인</button>
+    </div>
+  </div>
+
+  <script>
+    // 경품 데이터
+    const prizes = [
+      { name: '1등: 스타벅스 기프티콘', color: '#ff6b6b', probability: 5 },
+      { name: '꽝', color: '#95a5a6', probability: 30 },
+      { name: '2등: 500 포인트', color: '#4ecdc4', probability: 15 },
+      { name: '꽝', color: '#95a5a6', probability: 30 },
+      { name: '3등: 100 포인트', color: '#f39c12', probability: 20 },
+      { name: '꽝', color: '#95a5a6', probability: 0 },
+      { name: '4등: 쿠폰 5%', color: '#9b59b6', probability: 0 },
+      { name: '꽝', color: '#95a5a6', probability: 0 }
+    ];
+
+    let remaining = 3;
+    let isSpinning = false;
+    let currentRotation = 0;
+
+    const wheel = document.getElementById('wheel');
+    const spinBtn = document.getElementById('spinBtn');
+    const resultModal = document.getElementById('resultModal');
+    const prizeText = document.getElementById('prizeText');
+    const closeBtn = document.getElementById('closeBtn');
+    const remainingText = document.getElementById('remaining');
+
+    // 룰렛 휠 생성
+    function createWheel() {
+      const sectionAngle = 360 / prizes.length;
+      prizes.forEach((prize, index) => {
+        const section = document.createElement('div');
+        section.className = 'roulette-section';
+        section.style.transform = `rotate(${index * sectionAngle}deg)`;
+        section.style.backgroundColor = prize.color;
+        
+        const text = document.createElement('span');
+        text.textContent = prize.name;
+        section.appendChild(text);
+        
+        wheel.appendChild(section);
+      });
+    }
+
+    // 확률에 따른 경품 선택
+    function selectPrize() {
+      const totalProbability = prizes.reduce((sum, prize) => sum + prize.probability, 0);
+      let random = Math.random() * totalProbability;
+      
+      for (let i = 0; i < prizes.length; i++) {
+        random -= prizes[i].probability;
+        if (random <= 0) {
+          return i;
+        }
+      }
+      return 0;
+    }
+
+    // 룰렛 돌리기
+    function spin() {
+      if (isSpinning || remaining <= 0) return;
+      
+      isSpinning = true;
+      spinBtn.disabled = true;
+      
+      const selectedIndex = selectPrize();
+      const sectionAngle = 360 / prizes.length;
+      
+      // 최소 5바퀴 + 선택된 섹션으로 이동
+      const minRotation = 360 * 5;
+      const targetRotation = minRotation + (360 - (selectedIndex * sectionAngle)) - (sectionAngle / 2);
+      currentRotation += targetRotation;
+      
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+      
+      setTimeout(() => {
+        isSpinning = false;
+        remaining--;
+        remainingText.textContent = remaining;
+        
+        if (remaining > 0) {
+          spinBtn.disabled = false;
+        } else {
+          spinBtn.textContent = '참여 기회 소진';
+        }
+        
+        showResult(prizes[selectedIndex].name);
+      }, 4000);
+    }
+
+    // 결과 표시
+    function showResult(prize) {
+      prizeText.textContent = prize;
+      resultModal.classList.add('show');
+    }
+
+    // 모달 닫기
+    function closeModal() {
+      resultModal.classList.remove('show');
+    }
+
+    // 이벤트 리스너
+    spinBtn.addEventListener('click', spin);
+    closeBtn.addEventListener('click', closeModal);
+    resultModal.addEventListener('click', (e) => {
+      if (e.target === resultModal) closeModal();
+    });
+
+    // 초기화
+    createWheel();
+  </script>
+</body>
+</html>
+
