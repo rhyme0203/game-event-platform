@@ -213,13 +213,22 @@
       console.log('isSpinning:', isSpinning);
       console.log('remaining:', remaining);
       
-      if (isSpinning || remaining <= 0) {
-        console.log('이미 돌아가는 중이거나 기회 소진');
+      // 중복 실행 방지
+      if (isSpinning) {
+        console.log('이미 돌아가는 중입니다');
+        return;
+      }
+      
+      if (remaining <= 0) {
+        console.log('참여 기회가 소진되었습니다');
         return;
       }
       
       isSpinning = true;
-      if (spinBtn) spinBtn.disabled = true;
+      if (spinBtn) {
+        spinBtn.disabled = true;
+        spinBtn.textContent = '돌아가는 중...';
+      }
       
       const selectedIndex = selectPrize();
       const sectionAngle = 360 / prizes.length;
@@ -241,9 +250,14 @@
         if (remainingText) remainingText.textContent = remaining;
         
         if (remaining > 0) {
-          if (spinBtn) spinBtn.disabled = false;
+          if (spinBtn) {
+            spinBtn.disabled = false;
+            spinBtn.textContent = '룰렛 돌리기';
+          }
         } else {
-          if (spinBtn) spinBtn.textContent = '참여 기회 소진';
+          if (spinBtn) {
+            spinBtn.textContent = '참여 기회 소진';
+          }
         }
         
         showResult(prizes[selectedIndex].name);
@@ -423,10 +437,12 @@
         
         if (timeLeft <= 0) {
           clearInterval(timer);
-          // 카운트다운 완료 후 모달 닫고 게임 시작
+          // 카운트다운 완료 후 모달 닫고 게임 시작 (한 번만)
           closeAdModal();
           setTimeout(() => {
-            spin();
+            if (!isSpinning) {
+              spin();
+            }
           }, 300);
         }
       }, 1000);
@@ -436,9 +452,11 @@
     function startGame() {
       console.log('게임 시작!');
       closeAdModal();
-      // 모달이 완전히 닫힌 후 스핀 시작
+      // 모달이 완전히 닫힌 후 스핀 시작 (한 번만)
       setTimeout(() => {
-        spin();
+        if (!isSpinning) {
+          spin();
+        }
       }, 300);
     }
     
@@ -446,9 +464,11 @@
     function skipAd() {
       console.log('광고 건너뛰기');
       closeAdModal();
-      // 모달이 완전히 닫힌 후 스핀 시작
+      // 모달이 완전히 닫힌 후 스핀 시작 (한 번만)
       setTimeout(() => {
-        spin();
+        if (!isSpinning) {
+          spin();
+        }
       }, 300);
     }
     
