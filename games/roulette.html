@@ -657,9 +657,14 @@
           
           // GitHub DB에서 룰렛 설정 로드
           const rouletteSettings = window.githubDB.getGameSettings('roulette');
+          console.log('룰렛 설정 로드됨:', rouletteSettings);
+          
           if (rouletteSettings && rouletteSettings.prizes) {
             prizes = rouletteSettings.prizes;
             console.log('GitHub DB에서 경품 데이터 로드:', prizes);
+          } else {
+            console.log('경품 데이터가 없음, 기본 데이터 사용');
+            prizes = defaultPrizes;
           }
           
           if (rouletteSettings && rouletteSettings.attempts) {
@@ -668,6 +673,12 @@
               remainingText.textContent = remaining;
             }
             console.log('GitHub DB에서 시도 횟수 로드:', remaining);
+          } else {
+            console.log('시도 횟수 설정이 없음, 기본값 사용');
+            remaining = 3;
+            if (remainingText) {
+              remainingText.textContent = remaining;
+            }
           }
           
           // 로딩 완료
