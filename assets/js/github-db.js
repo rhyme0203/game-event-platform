@@ -10,6 +10,16 @@ class GitHubDatabase {
   // 초기화
   init() {
     this.loadFallbackData();
+    // 데이터 로드 완료를 기다림
+    this.waitForData();
+  }
+  
+  // 데이터 로드 완료 대기
+  async waitForData() {
+    while (!this.fallbackData) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    console.log('GitHub DB 데이터 로드 완료');
   }
 
   // 폴백 데이터 로드

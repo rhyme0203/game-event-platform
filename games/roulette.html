@@ -648,9 +648,12 @@
       console.log('GitHub Pages 환경: GitHub DB 사용 시도');
       
       // GitHub DB가 로드될 때까지 대기
-      const checkGitHubDB = () => {
+      const checkGitHubDB = async () => {
         if (window.githubDB) {
           console.log('GitHub DB 발견, 설정 로드 시도');
+          
+          // GitHub DB 데이터가 준비될 때까지 대기
+          await window.githubDB.waitForData();
           
           // GitHub DB에서 룰렛 설정 로드
           const rouletteSettings = window.githubDB.getGameSettings('roulette');
@@ -659,8 +662,8 @@
             console.log('GitHub DB에서 경품 데이터 로드:', prizes);
           }
           
-          if (rouletteSettings && rouletteSettings.maxAttempts) {
-            remaining = rouletteSettings.maxAttempts;
+          if (rouletteSettings && rouletteSettings.attempts) {
+            remaining = rouletteSettings.attempts;
             if (remainingText) {
               remainingText.textContent = remaining;
             }
