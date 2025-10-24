@@ -105,7 +105,7 @@
         </div>
       </div>
 
-      <button class="start-button" id="spinBtn">룰렛 돌리기</button>
+      <button class="start-button" id="spinBtn" onclick="spin()">룰렛 돌리기</button>
 
       <div class="info-box">
         <p><strong>참여 방법</strong></p>
@@ -128,6 +128,8 @@
   </div>
 
   <script>
+    console.log('스크립트 로드됨!');
+    
     // 경품 데이터
     const prizes = [
       { name: '1등: 스타벅스 기프티콘', color: '#ff6b6b', probability: 5 },
@@ -144,6 +146,49 @@
 
     // DOM 요소
     let wheel, canvas, ctx, spinBtn, resultModal, prizeText, closeBtn, remainingText;
+    
+    // spin 함수를 전역으로 선언
+    window.spin = function() {
+      console.log('=== spin() 함수 호출됨! ===');
+      console.log('isSpinning:', isSpinning);
+      console.log('remaining:', remaining);
+      
+      if (isSpinning || remaining <= 0) {
+        console.log('이미 돌아가는 중이거나 기회 소진');
+        return;
+      }
+      
+      isSpinning = true;
+      if (spinBtn) spinBtn.disabled = true;
+      
+      const selectedIndex = selectPrize();
+      const sectionAngle = 360 / prizes.length;
+      
+      // 최소 5바퀴 + 선택된 섹션으로 이동
+      const minRotation = 360 * 5;
+      const targetRotation = minRotation + (360 - (selectedIndex * sectionAngle)) - (sectionAngle / 2);
+      currentRotation += targetRotation;
+      
+      console.log('회전 각도:', currentRotation);
+      
+      if (wheel) {
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
+      }
+      
+      setTimeout(() => {
+        isSpinning = false;
+        remaining--;
+        if (remainingText) remainingText.textContent = remaining;
+        
+        if (remaining > 0) {
+          if (spinBtn) spinBtn.disabled = false;
+        } else {
+          if (spinBtn) spinBtn.textContent = '참여 기회 소진';
+        }
+        
+        showResult(prizes[selectedIndex].name);
+      }, 4000);
+    };
 
     // 페이지 로드 후 초기화
     window.addEventListener('DOMContentLoaded', function() {
@@ -267,42 +312,6 @@
       return 0;
     }
 
-    // 룰렛 돌리기
-    function spin() {
-      console.log('룰렛 돌리기 클릭!');
-      
-      if (isSpinning || remaining <= 0) {
-        console.log('이미 돌아가는 중이거나 기회 소진');
-        return;
-      }
-      
-      isSpinning = true;
-      spinBtn.disabled = true;
-      
-      const selectedIndex = selectPrize();
-      const sectionAngle = 360 / prizes.length;
-      
-      // 최소 5바퀴 + 선택된 섹션으로 이동
-      const minRotation = 360 * 5;
-      const targetRotation = minRotation + (360 - (selectedIndex * sectionAngle)) - (sectionAngle / 2);
-      currentRotation += targetRotation;
-      
-      wheel.style.transform = `rotate(${currentRotation}deg)`;
-      
-      setTimeout(() => {
-        isSpinning = false;
-        remaining--;
-        remainingText.textContent = remaining;
-        
-        if (remaining > 0) {
-          spinBtn.disabled = false;
-        } else {
-          spinBtn.textContent = '참여 기회 소진';
-        }
-        
-        showResult(prizes[selectedIndex].name);
-      }, 4000);
-    }
 
     // 결과 표시
     function showResult(prize) {
