@@ -6,6 +6,10 @@
   <title>럭키빤쓰 - 행운의 룰렛</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/ads.css">
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
+       crossorigin="anonymous"></script>
   <style>
     .roulette-container {
       position: relative;
@@ -125,7 +129,7 @@
       <div class="result-title">축하합니다!</div>
       <div class="result-prize" id="prizeText"></div>
       
-      <!-- 결과 후 광고 -->
+      <!-- Google AdSense 결과 후 광고 -->
       <div class="result-ad">
         <div class="result-ad-title">🎉 축하합니다!</div>
         <div class="result-ad-content">
@@ -133,9 +137,11 @@
           <strong>럭키빤쓰 프리미엄</strong>에서<br>
           매일 새로운 게임을 만나보세요!
         </div>
-        <button class="start-button" style="margin-top: 10px; padding: 10px 20px; font-size: 0.9em;" onclick="trackAdClick('result-ad')">
-          프리미엄 체험하기
-        </button>
+        <!-- Google AdSense 광고 -->
+        <ins class="adsbygoogle"
+             style="display:block;width:300px;height:250px;margin:10px auto;"
+             data-ad-client="ca-pub-8451876651536601"
+             data-ad-slot="5939741579"></ins>
       </div>
       
       <button class="close-button" id="closeBtn">확인</button>
@@ -339,10 +345,19 @@
       resultModal.classList.remove('show');
     }
 
+    // Google AdSense 초기화
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    
     // 광고 클릭 추적
     function trackAdClick(adType) {
       console.log('광고 클릭:', adType);
-      alert('광고 클릭됨: ' + adType);
+      // Google Analytics 추적
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'ad_click', {
+          'ad_type': adType,
+          'page': window.location.pathname
+        });
+      }
     }
   </script>
 </body>

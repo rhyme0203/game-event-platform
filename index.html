@@ -6,6 +6,10 @@
   <title>럭키빤쓰 - 행운을 잡아라!</title>
   <link rel="stylesheet" href="assets/css/common.css">
   <link rel="stylesheet" href="assets/css/ads.css">
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
+       crossorigin="anonymous"></script>
   <style>
     .games-grid {
       display: grid;
@@ -102,14 +106,12 @@
     </div>
   </div>
 
-  <!-- 메인 광고 배너 -->
+  <!-- Google AdSense 광고 -->
   <div class="ad-container">
-    <a href="#" class="ad-banner" onclick="trackAdClick('main-banner')">
-      <span class="ad-label">🎯 특별 이벤트</span>
-      <div class="ad-title">럭키빤쓰 프리미엄</div>
-      <div class="ad-description">더 많은 게임과 경품을 만나보세요!</div>
-      <div class="ad-sponsor">Sponsored by 럭키빤쓰</div>
-    </a>
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:728px;height:90px"
+         data-ad-client="ca-pub-8451876651536601"
+         data-ad-slot="5939741579"></ins>
   </div>
 
   <div class="games-grid">
@@ -159,11 +161,19 @@
   </div>
 
   <script>
+    // Google AdSense 초기화
+    (adsbygoogle = window.adsbygoogle || []).push({});
+    
     // 광고 클릭 추적
     function trackAdClick(adType) {
       console.log('광고 클릭:', adType);
-      // 여기에 실제 광고 추적 코드 추가
-      alert('광고 클릭됨: ' + adType);
+      // Google Analytics 추적
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'ad_click', {
+          'ad_type': adType,
+          'page': window.location.pathname
+        });
+      }
     }
 
     // 사이드바 광고 표시 (3초 후)
