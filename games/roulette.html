@@ -173,6 +173,9 @@
     </div>
   </div>
 
+  <!-- 관리자 통합 스크립트 -->
+  <script src="../assets/js/admin-integration.js"></script>
+  
   <script>
     console.log('스크립트 로드됨!');
     
@@ -189,6 +192,9 @@
     let remaining = 3;
     let isSpinning = false;
     let currentRotation = 0;
+    let currentAttempts = window.maxAttempts || 3;
+    const maxAttempts = window.maxAttempts || 3;
+    const spinDuration = window.spinDuration || 4000; // 4초
 
     // DOM 요소
     let wheel, canvas, ctx, spinBtn, resultModal, prizeText, closeBtn, remainingText;
@@ -234,6 +240,15 @@
         isSpinning = false;
         remaining--;
         if (remainingText) remainingText.textContent = remaining;
+        
+        // 게임 플레이 기록
+        if (window.adminIntegration) {
+          window.adminIntegration.recordGamePlay('roulette', {
+            won: selectedPrize.probability > 0,
+            prize: selectedPrize.name,
+            timestamp: new Date().toISOString()
+          });
+        }
         
         if (remaining > 0) {
           if (spinBtn) {
@@ -382,6 +397,13 @@
     } else {
       (adsbygoogle = window.adsbygoogle || []).push({});
     }
+
+    // 관리자 설정 적용
+    window.addEventListener('DOMContentLoaded', function() {
+      if (window.adminIntegration) {
+        window.adminIntegration.applyRouletteSettings();
+      }
+    });
     
     // 광고 모달 표시
     function showAdModal() {
