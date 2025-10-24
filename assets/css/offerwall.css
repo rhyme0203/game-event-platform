@@ -1,8 +1,15 @@
+/* Body 배경색 흰색으로 설정 */
+body {
+  background: white !important;
+  margin: 0;
+  padding: 0;
+}
+
 /* 오퍼월 리워드 앱 UI - 모바일 웹용 */
 .offerwall-container {
   max-width: 414px;
   margin: 0 auto;
-  background: #f8f9fa;
+  background: white;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
