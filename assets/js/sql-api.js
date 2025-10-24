@@ -178,11 +178,11 @@ class SQLAdminIntegration {
   }
 
   // 게임 설정 가져오기 (캐시 포함)
-  async getGameSettings(gameId) {
+  async getGameSettings(gameId, forceRefresh = false) {
     const cacheKey = `game_${gameId}`;
     const cached = this.cache.get(cacheKey);
     
-    if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+    if (!forceRefresh && cached && Date.now() - cached.timestamp < this.cacheTimeout) {
       return cached.data;
     }
 
@@ -264,7 +264,36 @@ class SQLAdminIntegration {
   // 캐시된 설정 새로고침
   async refreshSettings(gameId) {
     this.cache.delete(`game_${gameId}`);
-    return await this.getGameSettings(gameId);
+    return await this.getGameSettings(gameId, true);
+  }
+
+  // 실시간 설정 감지 시작
+  startSettingsWatcher(intervalMs = 5000) {
+    console.log('실시간 설정 감지 시작 (5초 간격)');
+    
+    setInterval(async () => {
+      try {
+        // 룰렛 설정 새로고침
+        const result = await this.getGameSettings('roulette', true);
+        if (result.success && result.data) {
+          // 설정이 변경되었는지 확인
+          const currentSettings = result.data;
+          const lastSettings = this.cache.get('last_roulette_settings');
+          
+          if (!lastSettings || JSON.stringify(currentSettings) !== JSON.stringify(lastSettings)) {
+            console.log('룰렛 설정 변경 감지됨:', currentSettings);
+            
+            // 설정 적용
+            await this.applyRouletteSettings();
+            
+            // 마지막 설정 저장
+            this.cache.set('last_roulette_settings', currentSettings);
+          }
+        }
+      } catch (error) {
+        console.error('설정 감지 중 오류:', error);
+      }
+    }, intervalMs);
   }
 }
 

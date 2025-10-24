@@ -501,6 +501,11 @@
         };
         
         checkSQLIntegration();
+        
+        // 실시간 설정 감지 시작
+        if (window.sqlAdminIntegration) {
+          window.sqlAdminIntegration.startSettingsWatcher(3000); // 3초 간격
+        }
       } catch (error) {
         console.error('SQL API 설정 적용 실패:', error);
         // 폴백: 기존 로컬스토리지 방식 사용
