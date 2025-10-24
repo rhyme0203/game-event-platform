@@ -92,6 +92,124 @@
       font-size: 0.9em;
       color: white;
     }
+
+    /* 출석체크 스타일 */
+    .attendance-section {
+      margin: 40px 0;
+    }
+
+    .attendance-section h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+
+    .attendance-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      padding: 30px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+    }
+
+    .attendance-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .attendance-desc {
+      font-size: 1em;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .attendance-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin: 20px 0;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .calendar-day.checked {
+      background: #4CAF50;
+      transform: scale(1.1);
+    }
+
+    .calendar-day.today {
+      background: #FF9800;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .attendance-btn {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px auto 0;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .attendance-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+    }
+
+    .attendance-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-icon {
+      font-size: 1.2em;
+    }
+
+    @media (max-width: 600px) {
+      .attendance-card {
+        padding: 20px;
+      }
+      
+      .attendance-calendar {
+        max-width: 250px;
+      }
+      
+      .calendar-day {
+        font-size: 0.8em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -106,6 +224,24 @@
     </div>
   </div>
 
+
+  <!-- 출석체크 섹션 -->
+  <div class="attendance-section">
+    <h2>📅 출석체크</h2>
+    <div class="attendance-card">
+      <div class="attendance-info">
+        <div class="attendance-title">매일 출석하고 보너스를 받으세요!</div>
+        <div class="attendance-desc">연속 출석일수에 따라 특별한 보너스를 드립니다</div>
+      </div>
+      <div class="attendance-calendar" id="attendanceCalendar">
+        <!-- 달력이 여기에 생성됩니다 -->
+      </div>
+      <button class="attendance-btn" id="attendanceBtn" onclick="checkAttendance()">
+        <span class="btn-text">출석체크</span>
+        <span class="btn-icon">✅</span>
+      </button>
+    </div>
+  </div>
 
   <div class="games-grid">
     <a href="games/roulette.html" class="game-item">
