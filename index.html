@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>럭키빤쓰 - 행운을 잡아라!</title>
   <link rel="stylesheet" href="assets/css/common.css">
+  <link rel="stylesheet" href="assets/css/ads.css">
   <style>
     .games-grid {
       display: grid;
@@ -101,6 +102,16 @@
     </div>
   </div>
 
+  <!-- 메인 광고 배너 -->
+  <div class="ad-container">
+    <a href="#" class="ad-banner" onclick="trackAdClick('main-banner')">
+      <span class="ad-label">🎯 특별 이벤트</span>
+      <div class="ad-title">럭키빤쓰 프리미엄</div>
+      <div class="ad-description">더 많은 게임과 경품을 만나보세요!</div>
+      <div class="ad-sponsor">Sponsored by 럭키빤쓰</div>
+    </a>
+  </div>
+
   <div class="games-grid">
     <a href="games/roulette.html" class="game-item">
       <span class="game-icon">🎡</span>
@@ -139,6 +150,27 @@
       <li>✅ 간편한 웹사이트/앱 임베딩</li>
     </ul>
   </div>
+
+  <!-- 사이드바 광고 -->
+  <div class="sidebar-ad" id="sidebarAd">
+    <div class="sidebar-ad-title">💎 프리미엄</div>
+    <div class="sidebar-ad-image">광고 이미지</div>
+    <button class="sidebar-ad-cta" onclick="trackAdClick('sidebar')">자세히 보기</button>
+  </div>
+
+  <script>
+    // 광고 클릭 추적
+    function trackAdClick(adType) {
+      console.log('광고 클릭:', adType);
+      // 여기에 실제 광고 추적 코드 추가
+      alert('광고 클릭됨: ' + adType);
+    }
+
+    // 사이드바 광고 표시 (3초 후)
+    setTimeout(() => {
+      document.getElementById('sidebarAd').style.display = 'block';
+    }, 3000);
+  </script>
 </body>
 </html>
 

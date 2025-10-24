@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>럭키빤쓰 - 행운의 룰렛</title>
   <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/ads.css">
   <style>
     .roulette-container {
       position: relative;
@@ -123,6 +124,20 @@
       <div class="result-icon">🎉</div>
       <div class="result-title">축하합니다!</div>
       <div class="result-prize" id="prizeText"></div>
+      
+      <!-- 결과 후 광고 -->
+      <div class="result-ad">
+        <div class="result-ad-title">🎉 축하합니다!</div>
+        <div class="result-ad-content">
+          더 많은 경품을 받고 싶다면?<br>
+          <strong>럭키빤쓰 프리미엄</strong>에서<br>
+          매일 새로운 게임을 만나보세요!
+        </div>
+        <button class="start-button" style="margin-top: 10px; padding: 10px 20px; font-size: 0.9em;" onclick="trackAdClick('result-ad')">
+          프리미엄 체험하기
+        </button>
+      </div>
+      
       <button class="close-button" id="closeBtn">확인</button>
     </div>
   </div>
@@ -322,6 +337,12 @@
     // 모달 닫기
     function closeModal() {
       resultModal.classList.remove('show');
+    }
+
+    // 광고 클릭 추적
+    function trackAdClick(adType) {
+      console.log('광고 클릭:', adType);
+      alert('광고 클릭됨: ' + adType);
     }
   </script>
 </body>

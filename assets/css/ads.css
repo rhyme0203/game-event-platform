@@ -1,0 +1,173 @@
+/* 광고 스타일 */
+.ad-container {
+  margin: 20px 0;
+  text-align: center;
+  position: relative;
+}
+
+.ad-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  padding: 20px;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.ad-banner:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+  color: white;
+}
+
+.ad-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: adShine 3s infinite;
+}
+
+@keyframes adShine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.ad-label {
+  font-size: 0.8em;
+  opacity: 0.8;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.ad-title {
+  font-size: 1.2em;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.ad-description {
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+.ad-sponsor {
+  font-size: 0.7em;
+  opacity: 0.7;
+  margin-top: 5px;
+}
+
+/* 게임 결과 후 광고 */
+.result-ad {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.result-ad-title {
+  font-size: 1em;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.result-ad-content {
+  font-size: 0.9em;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 사이드바 광고 */
+.sidebar-ad {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 160px;
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: none;
+}
+
+.sidebar-ad-title {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.sidebar-ad-image {
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+  border-radius: 5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 0.8em;
+}
+
+.sidebar-ad-cta {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 0.8em;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.sidebar-ad-cta:hover {
+  background: var(--secondary-color);
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .sidebar-ad {
+    display: none;
+  }
+  
+  .ad-banner {
+    padding: 15px;
+    font-size: 0.9em;
+  }
+  
+  .ad-title {
+    font-size: 1.1em;
+  }
+}
+
+/* 광고 숨기기 버튼 */
+.ad-close {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.ad-close:hover {
+  color: white;
+}
