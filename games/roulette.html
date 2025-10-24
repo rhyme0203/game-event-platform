@@ -423,7 +423,11 @@
         
         if (timeLeft <= 0) {
           clearInterval(timer);
-          startGame();
+          // 카운트다운 완료 후 모달 닫고 게임 시작
+          closeAdModal();
+          setTimeout(() => {
+            spin();
+          }, 300);
         }
       }, 1000);
     }
@@ -432,14 +436,20 @@
     function startGame() {
       console.log('게임 시작!');
       closeAdModal();
-      spin();
+      // 모달이 완전히 닫힌 후 스핀 시작
+      setTimeout(() => {
+        spin();
+      }, 300);
     }
     
     // 광고 건너뛰기
     function skipAd() {
       console.log('광고 건너뛰기');
       closeAdModal();
-      spin();
+      // 모달이 완전히 닫힌 후 스핀 시작
+      setTimeout(() => {
+        spin();
+      }, 300);
     }
     
     // 광고 클릭 추적
