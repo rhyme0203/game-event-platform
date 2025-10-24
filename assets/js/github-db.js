@@ -126,6 +126,47 @@ class GitHubDatabase {
       return false;
     }
   }
+  
+  // 게임 설정 저장
+  async saveGameSettings(gameType, settings) {
+    try {
+      console.log(`${gameType} 게임 설정 저장:`, settings);
+      
+      // 현재 데이터 로드
+      const currentData = this.fallbackData || this.getDefaultData();
+      
+      // 게임 설정 업데이트
+      currentData.games[gameType] = {
+        ...currentData.games[gameType],
+        ...settings,
+        lastUpdated: new Date().toISOString()
+      };
+      
+      // 데이터 저장
+      const success = await this.saveDatabase(currentData);
+      
+      if (success) {
+        // 메모리 데이터도 업데이트
+        this.fallbackData = currentData;
+        
+        // 설정 변경 이벤트 발생
+        window.dispatchEvent(new CustomEvent('adminSettingsChanged', {
+          detail: {
+            gameType: gameType,
+            settings: settings
+          }
+        }));
+        
+        console.log(`${gameType} 게임 설정 저장 완료`);
+        return { success: true };
+      } else {
+        return { success: false, error: '데이터 저장 실패' };
+      }
+    } catch (error) {
+      console.error('게임 설정 저장 실패:', error);
+      return { success: false, error: error.message };
+    }
+  }
 
   // 게임 설정 가져오기
   async getGameSettings(gameId) {

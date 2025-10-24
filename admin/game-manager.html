@@ -353,6 +353,8 @@
   </div>
 
   <!-- 데이터베이스 및 API 스크립트 -->
+  <!-- GitHub DB 스크립트 (우선) -->
+  <script src="../assets/js/github-db.js"></script>
   <!-- SQL API 스크립트 -->
   <script src="../assets/js/sql-api.js"></script>
   <!-- 로컬스토리지 API (폴백용) -->
@@ -581,9 +583,12 @@
           settings.prizes = collectPrizes('scratch');
         }
 
-        // API를 통해 저장 (SQL API 우선)
+        // API를 통해 저장 (GitHub DB 우선)
         let response;
-        if (window.sqlAPI) {
+        if (window.githubDB) {
+          console.log('GitHub DB로 저장');
+          response = await window.githubDB.saveGameSettings(currentGame, settings);
+        } else if (window.sqlAPI) {
           console.log('SQL API로 저장');
           response = await window.sqlAPI.saveGameSettings(currentGame, settings);
         } else if (window.adminAPI) {
