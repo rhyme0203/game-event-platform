@@ -407,10 +407,8 @@
       const modal = document.getElementById('adModal');
       modal.classList.add('show');
       
-      // 광고 로드 후 카운트다운 시작
-      setTimeout(() => {
-        startCountdown();
-      }, 2000);
+      // 카운트다운은 자동으로 시작하지 않음
+      // 사용자가 "게임 시작하기" 버튼을 눌러야만 시작
     }
     
     // 광고 모달 닫기
@@ -451,13 +449,8 @@
     // 게임 시작
     function startGame() {
       console.log('게임 시작!');
-      closeAdModal();
-      // 모달이 닫힌 후 스핀 시작
-      setTimeout(() => {
-        if (!isSpinning) {
-          spin();
-        }
-      }, 300);
+      // 카운트다운 시작
+      startCountdown();
     }
     
     // 광고 건너뛰기
