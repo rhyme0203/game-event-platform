@@ -612,44 +612,34 @@
         await window.sqlAPI.registerUser();
         console.log('사용자 등록 완료');
         
-        // SQL API 통합 스크립트가 로드될 때까지 대기
-        const checkSQLIntegration = async () => {
-          if (window.sqlAdminIntegration) {
-            console.log('SQL 통합 스크립트 발견, 설정 적용');
-            await window.sqlAdminIntegration.applyRouletteSettings();
-            
-            // 설정 적용 후 데이터 업데이트
-            setTimeout(() => {
-              if (window.prizeData) {
-                prizes = window.prizeData;
-                console.log('SQL 경품 데이터 적용됨:', prizes);
-              }
-              if (window.maxAttempts) {
-                remaining = window.maxAttempts;
-                console.log('SQL 시도 횟수 적용됨:', remaining);
-                if (remainingText) {
-                  remainingText.textContent = remaining;
-                }
-              }
-              if (window.spinDuration) {
-                console.log('SQL 회전 시간 적용됨:', window.spinDuration);
-              }
-              
-              // 데이터 로드 완료 후 UI 표시
-              showGameUI();
-            }, 100);
-          } else {
-            console.log('SQL 통합 스크립트를 찾을 수 없습니다, 100ms 후 재시도');
-            setTimeout(checkSQLIntegration, 100);
-          }
-        };
+        // SQL API로 직접 게임 설정 로드
+        const rouletteSettings = await window.sqlAPI.getGameSettings('roulette');
+        console.log('룰렛 설정 로드됨:', rouletteSettings);
         
-        checkSQLIntegration();
-        
-        // 실시간 설정 감지 시작
-        if (window.sqlAdminIntegration) {
-          window.sqlAdminIntegration.startSettingsWatcher(3000); // 3초 간격
+        if (rouletteSettings && rouletteSettings.prizes) {
+          prizes = rouletteSettings.prizes;
+          console.log('SQL API에서 경품 데이터 로드:', prizes);
+        } else {
+          console.log('경품 데이터가 없음, 기본 데이터 사용');
+          prizes = defaultPrizes;
         }
+        
+        if (rouletteSettings && rouletteSettings.attempts) {
+          remaining = rouletteSettings.attempts;
+          console.log('SQL API에서 시도 횟수 로드:', remaining);
+          if (remainingText) {
+            remainingText.textContent = remaining;
+          }
+        } else {
+          console.log('시도 횟수 설정이 없음, 기본값 사용');
+          remaining = 3;
+          if (remainingText) {
+            remainingText.textContent = remaining;
+          }
+        }
+        
+        // 데이터 로드 완료 후 UI 표시
+        showGameUI();
       } catch (error) {
         console.error('SQL API 설정 적용 실패:', error);
         console.log('폴백: 로컬스토리지 방식 사용');
