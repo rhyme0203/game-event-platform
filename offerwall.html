@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>럭키빤쓰 - 포인트 적립</title>
+  <link rel="stylesheet" href="assets/css/offerwall.css">
+  <link rel="stylesheet" href="assets/css/point-system.css">
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
+       crossorigin="anonymous"></script>
+  
+  <!-- AdSense 코드 스니펫 -->
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-8451876651536601",
+      enable_page_level_ads: true
+    });
+  </script>
+</head>
+<body>
+  <div class="offerwall-container">
+    <!-- 헤더 -->
+    <div class="offerwall-header">
+      <h1 class="offerwall-title">포인트 적립</h1>
+    </div>
+
+    <!-- 포인트 표시 섹션 -->
+    <div class="points-section">
+      <div class="points-title">현재 보유 포인트</div>
+      <div class="points-amount" id="currentPoints">0P</div>
+      <div class="points-subtitle">미션을 완료하고 포인트를 모아보세요!</div>
+    </div>
+
+    <!-- 배너 섹션 -->
+    <div class="banner-section">
+      <div class="banner-card">
+        <div class="banner-title">🎉 신규 사용자 특별 혜택!</div>
+        <div class="banner-description">첫 미션 완료 시 보너스 포인트 100P 추가 지급</div>
+        <button class="banner-btn" onclick="claimBonus()">보너스 받기</button>
+      </div>
+    </div>
+
+    <!-- 카테고리 탭 -->
+    <div class="category-tabs">
+      <div class="category-tab active" data-category="all">전체</div>
+      <div class="category-tab" data-category="games">게임</div>
+      <div class="category-tab" data-category="social">소셜</div>
+      <div class="category-tab" data-category="shopping">쇼핑</div>
+      <div class="category-tab" data-category="apps">앱</div>
+    </div>
+
+    <!-- 미션 섹션 -->
+    <div class="missions-section">
+      <h2 class="missions-title">포인트 적립 미션</h2>
+      
+      <!-- 게임 미션 -->
+      <div class="mission-card" data-category="games">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🎰</div>
+          <div class="mission-info">
+            <div class="mission-title">룰렛 게임 플레이</div>
+            <div class="mission-description">룰렛을 돌려서 포인트를 획득하세요</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+50P</div>
+          <button class="mission-btn" onclick="goToGame('roulette')">게임하기</button>
+        </div>
+      </div>
+
+      <div class="mission-card" data-category="games">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">🎲</div>
+          <div class="mission-info">
+            <div class="mission-title">슬롯머신 플레이</div>
+            <div class="mission-description">슬롯머신으로 잭팟을 노려보세요</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+30P</div>
+          <button class="mission-btn" onclick="goToGame('slot')">게임하기</button>
+        </div>
+      </div>
+
+      <div class="mission-card" data-category="games">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">🎯</div>
+          <div class="mission-info">
+            <div class="mission-title">스크래치 게임</div>
+            <div class="mission-description">스크래치를 긁어서 상품을 확인하세요</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+25P</div>
+          <button class="mission-btn" onclick="goToGame('scratch')">게임하기</button>
+        </div>
+      </div>
+
+      <div class="mission-card" data-category="games">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">🎁</div>
+          <div class="mission-info">
+            <div class="mission-title">캡슐뽑기 게임</div>
+            <div class="mission-description">캡슐을 뽑아서 행운을 확인하세요</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+20P</div>
+          <button class="mission-btn" onclick="goToGame('capsule')">게임하기</button>
+        </div>
+      </div>
+
+      <!-- 소셜 미션 -->
+      <div class="mission-card" data-category="social">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">📱</div>
+          <div class="mission-info">
+            <div class="mission-title">출석체크</div>
+            <div class="mission-description">매일 출석체크로 포인트를 받으세요</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+50P</div>
+          <button class="mission-btn" onclick="goToMain()">출석하기</button>
+        </div>
+      </div>
+
+      <div class="mission-card" data-category="social">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">👥</div>
+          <div class="mission-info">
+            <div class="mission-title">친구 초대</div>
+            <div class="mission-description">친구를 초대하고 보너스 포인트를 받으세요</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+200P</div>
+          <button class="mission-btn" onclick="inviteFriend()">초대하기</button>
+        </div>
+      </div>
+
+      <!-- 쇼핑 미션 -->
+      <div class="mission-card" data-category="shopping">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">🛒</div>
+          <div class="mission-info">
+            <div class="mission-title">첫 구매 혜택</div>
+            <div class="mission-description">첫 구매 시 추가 포인트 지급</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+500P</div>
+          <button class="mission-btn" onclick="goToShop()">쇼핑하기</button>
+        </div>
+      </div>
+
+      <!-- 앱 미션 -->
+      <div class="mission-card" data-category="apps">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">📱</div>
+          <div class="mission-info">
+            <div class="mission-title">앱 다운로드</div>
+            <div class="mission-description">추천 앱을 다운로드하고 포인트를 받으세요</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+100P</div>
+          <button class="mission-btn" onclick="downloadApp()">다운로드</button>
+        </div>
+      </div>
+
+      <div class="mission-card" data-category="apps">
+        <div class="mission-header">
+          <div class="mission-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">⭐</div>
+          <div class="mission-info">
+            <div class="mission-title">앱 리뷰 작성</div>
+            <div class="mission-description">앱스토어에서 리뷰를 작성하세요</div>
+          </div>
+        </div>
+        <div class="mission-reward">
+          <div class="reward-amount">+150P</div>
+          <button class="mission-btn" onclick="writeReview()">리뷰쓰기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 광고 섹션 -->
+    <div style="padding: 20px; text-align: center;">
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+        <h3 style="margin: 0 0 10px 0; color: #333;">광고를 보고 포인트 받기</h3>
+        <p style="margin: 0 0 15px 0; color: #666; font-size: 14px;">광고를 시청하고 포인트를 획득하세요</p>
+        <button onclick="watchAd()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">광고 보기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 포인트 시스템 -->
+  <script src="assets/js/point-system.js"></script>
+  
+  <script>
+    // 포인트 업데이트
+    function updatePoints() {
+      const currentPoints = document.getElementById('currentPoints');
+      if (currentPoints && window.pointSystem) {
+        currentPoints.textContent = window.pointSystem.getPoints().toLocaleString() + 'P';
+      }
+    }
+
+    // 카테고리 필터링
+    document.querySelectorAll('.category-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        // 활성 탭 변경
+        document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        // 카테고리 필터링
+        const category = this.dataset.category;
+        const missions = document.querySelectorAll('.mission-card');
+        
+        missions.forEach(mission => {
+          if (category === 'all' || mission.dataset.category === category) {
+            mission.style.display = 'block';
+            mission.classList.add('fade-in');
+          } else {
+            mission.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // 게임으로 이동
+    function goToGame(gameType) {
+      const gameUrls = {
+        'roulette': 'games/roulette.html',
+        'slot': 'games/slot.html',
+        'scratch': 'games/scratch.html',
+        'capsule': 'games/capsule.html'
+      };
+      
+      if (gameUrls[gameType]) {
+        window.location.href = gameUrls[gameType];
+      }
+    }
+
+    // 메인 페이지로 이동
+    function goToMain() {
+      window.location.href = 'index.html';
+    }
+
+    // 친구 초대
+    function inviteFriend() {
+      const shareText = '럭키빤쓰 게임을 함께 플레이해보세요!';
+      const shareUrl = window.location.origin;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: '럭키빤쓰',
+          text: shareText,
+          url: shareUrl
+        });
+      } else {
+        // 클립보드에 복사
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          alert('초대 링크가 클립보드에 복사되었습니다!');
+        });
+      }
+      
+      // 포인트 지급
+      if (window.pointSystem) {
+        window.pointSystem.addPoints(200, '친구 초대');
+      }
+      updatePoints();
+    }
+
+    // 보너스 받기
+    function claimBonus() {
+      if (window.pointSystem) {
+        window.pointSystem.addPoints(100, '신규 사용자 보너스');
+        alert('보너스 포인트 100P가 지급되었습니다!');
+        updatePoints();
+      }
+    }
+
+    // 광고 보기
+    function watchAd() {
+      // 광고 시뮬레이션
+      alert('광고를 시청하고 포인트를 획득했습니다!');
+      if (window.pointSystem) {
+        window.pointSystem.addPoints(30, '광고 시청');
+        updatePoints();
+      }
+    }
+
+    // 쇼핑하기
+    function goToShop() {
+      alert('쇼핑 기능은 준비 중입니다.');
+    }
+
+    // 앱 다운로드
+    function downloadApp() {
+      alert('앱 다운로드 기능은 준비 중입니다.');
+      if (window.pointSystem) {
+        window.pointSystem.addPoints(100, '앱 다운로드');
+        updatePoints();
+      }
+    }
+
+    // 리뷰 작성
+    function writeReview() {
+      alert('리뷰 작성 기능은 준비 중입니다.');
+      if (window.pointSystem) {
+        window.pointSystem.addPoints(150, '앱 리뷰 작성');
+        updatePoints();
+      }
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', function() {
+      updatePoints();
+      
+      // 포인트 시스템이 로드될 때까지 대기
+      const checkPointSystem = setInterval(() => {
+        if (window.pointSystem) {
+          updatePoints();
+          clearInterval(checkPointSystem);
+        }
+      }, 100);
+    });
+  </script>
+</body>
+</html>
