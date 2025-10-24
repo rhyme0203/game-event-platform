@@ -155,6 +155,132 @@
       (adsbygoogle = window.adsbygoogle || []).push({});
     }
     
+    // 출석체크 관련 변수
+    let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {
+      lastCheckDate: null,
+      consecutiveDays: 0,
+      totalDays: 0
+    };
+
+    // 출석체크 달력 생성
+    function createAttendanceCalendar() {
+      const calendar = document.getElementById('attendanceCalendar');
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      
+      // 요일 헤더
+      const dayHeaders = ['일', '월', '화', '수', '목', '금', '토'];
+      dayHeaders.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.textContent = day;
+        dayHeader.style.fontSize = '0.8em';
+        dayHeader.style.fontWeight = 'bold';
+        dayHeader.style.opacity = '0.7';
+        calendar.appendChild(dayHeader);
+      });
+
+      // 이번 달의 날짜들
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const startDate = new Date(firstDay);
+      startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+      for (let i = 0; i < 35; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        
+        const dayElement = document.createElement('div');
+        dayElement.className = 'calendar-day';
+        dayElement.textContent = date.getDate();
+        
+        // 오늘 날짜 표시
+        if (date.toDateString() === today.toDateString()) {
+          dayElement.classList.add('today');
+        }
+        
+        // 출석체크된 날짜 표시
+        const dateStr = date.toDateString();
+        if (attendanceData.checkedDates && attendanceData.checkedDates.includes(dateStr)) {
+          dayElement.classList.add('checked');
+        }
+        
+        calendar.appendChild(dayElement);
+      }
+    }
+
+    // 출석체크 실행
+    function checkAttendance() {
+      const today = new Date();
+      const todayStr = today.toDateString();
+      
+      // 이미 오늘 출석체크 했는지 확인
+      if (attendanceData.lastCheckDate === todayStr) {
+        alert('이미 오늘 출석체크를 완료했습니다!');
+        return;
+      }
+
+      // 출석체크 데이터 업데이트
+      attendanceData.lastCheckDate = todayStr;
+      attendanceData.totalDays++;
+      
+      // 연속 출석일수 계산
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toDateString();
+      
+      if (attendanceData.lastCheckDate === yesterdayStr) {
+        attendanceData.consecutiveDays++;
+      } else {
+        attendanceData.consecutiveDays = 1;
+      }
+
+      // 출석체크된 날짜 저장
+      if (!attendanceData.checkedDates) {
+        attendanceData.checkedDates = [];
+      }
+      attendanceData.checkedDates.push(todayStr);
+
+      // 로컬스토리지에 저장
+      localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+
+      // 버튼 비활성화
+      const btn = document.getElementById('attendanceBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-text">출석완료</span><span class="btn-icon">✅</span>';
+
+      // 보너스 계산
+      let bonus = 0;
+      if (attendanceData.consecutiveDays >= 7) {
+        bonus = 1000; // 7일 연속 출석
+      } else if (attendanceData.consecutiveDays >= 3) {
+        bonus = 500; // 3일 연속 출석
+      } else {
+        bonus = 100; // 기본 출석
+      }
+
+      // 결과 표시
+      alert(`출석체크 완료!\n연속 출석: ${attendanceData.consecutiveDays}일\n보너스: ${bonus} 포인트`);
+
+      // 달력 새로고침
+      const calendar = document.getElementById('attendanceCalendar');
+      calendar.innerHTML = '';
+      createAttendanceCalendar();
+    }
+
+    // 페이지 로드 시 초기화
+    window.addEventListener('DOMContentLoaded', function() {
+      createAttendanceCalendar();
+      
+      // 오늘 이미 출석체크 했는지 확인
+      const today = new Date().toDateString();
+      if (attendanceData.lastCheckDate === today) {
+        const btn = document.getElementById('attendanceBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="btn-text">출석완료</span><span class="btn-icon">✅</span>';
+      }
+    });
+
     // 광고 클릭 추적
     function trackAdClick(adType) {
       console.log('광고 클릭:', adType);
