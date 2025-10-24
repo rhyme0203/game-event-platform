@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>럭키빤쓰 - 스크래치</title>
   <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/ad-modal.css">
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
+       crossorigin="anonymous"></script>
   <style>
     .scratch-area {
       position: relative;
@@ -160,6 +165,44 @@
     </div>
   </div>
 
+  <!-- 광고 모달 -->
+  <div class="ad-modal" id="adModal">
+    <div class="ad-modal-content">
+      <button class="ad-modal-close" onclick="closeAdModalAndContinue()">&times;</button>
+      
+      <div class="ad-modal-header">
+        <div class="ad-modal-title">🎯 특별 이벤트!</div>
+        <div class="ad-modal-subtitle">럭키빤쓰 프리미엄 서비스를 확인해보세요</div>
+      </div>
+      
+      <div class="ad-modal-body">
+        <div class="ad-modal-ad">
+          <!-- Google AdSense 광고 -->
+          <ins class="adsbygoogle"
+               style="display:block;width:300px;height:250px;"
+               data-ad-client="ca-pub-8451876651536601"
+               data-ad-slot="5939741579"></ins>
+          <div class="ad-modal-ad-placeholder" style="display:none;">
+            광고 로딩 중...
+          </div>
+        </div>
+        
+        <div class="ad-modal-countdown" id="countdown" style="display:none;">
+          <span id="countdownText">5</span>초 후 계속하기
+        </div>
+      </div>
+      
+      <div class="ad-modal-footer">
+        <button class="ad-modal-btn ad-modal-btn-primary" onclick="continueScratching()" id="continueBtn">
+          계속 긁기
+        </button>
+        <button class="ad-modal-btn ad-modal-btn-secondary" onclick="skipAdAndContinue()">
+          광고 건너뛰기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const prizes = [
       { name: '🎊 대박! 50,000원 상품권', emoji: '💎', isJackpot: true },
@@ -184,6 +227,7 @@
 
     let isDrawing = false;
     let isRevealed = false;
+    let adShown = false;
     let selectedPrize;
 
     // 캔버스 초기화
@@ -239,6 +283,13 @@
       progressFill.style.width = progress + '%';
       progressText.textContent = progress;
 
+      // 30% 진행 시 광고 모달 표시
+      if (progress >= 30 && !adShown) {
+        adShown = true;
+        showAdModal();
+        return;
+      }
+
       // 70% 이상 긁으면 자동 완료
       if (progress > 70 && !isRevealed) {
         revealPrize();
@@ -272,9 +323,51 @@
       }, 300);
     }
 
+    // 광고 모달 표시
+    function showAdModal() {
+      console.log('광고 모달 표시');
+      const modal = document.getElementById('adModal');
+      modal.classList.add('show');
+    }
+    
+    // 광고 모달 닫기
+    function closeAdModal() {
+      const modal = document.getElementById('adModal');
+      modal.classList.remove('show');
+    }
+    
+    // 광고 모달 닫고 계속하기
+    function closeAdModalAndContinue() {
+      console.log('X 버튼으로 모달 닫기');
+      closeAdModal();
+      setTimeout(() => {
+        continueScratching();
+      }, 300);
+    }
+    
+    // 계속 긁기
+    function continueScratching() {
+      console.log('계속 긁기');
+      closeAdModal();
+      // 긁기 재개
+      setTimeout(() => {
+        isDrawing = true;
+      }, 300);
+    }
+    
+    // 광고 건너뛰고 계속하기
+    function skipAdAndContinue() {
+      console.log('광고 건너뛰기');
+      closeAdModal();
+      setTimeout(() => {
+        continueScratching();
+      }, 300);
+    }
+
     // 게임 리셋
     function resetGame() {
       isRevealed = false;
+      adShown = false;
       progressFill.style.width = '0%';
       progressText.textContent = '0';
       selectPrize();
