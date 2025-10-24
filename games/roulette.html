@@ -681,6 +681,11 @@
             }
           }
           
+          // 시도 횟수 UI 업데이트
+          if (remainingText) {
+            remainingText.textContent = remaining;
+          }
+          
           // 로딩 완료
           isLoading = false;
           isDataLoaded = true;
