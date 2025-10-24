@@ -2,6 +2,7 @@
 class AdminIntegration {
   constructor() {
     this.adminData = null;
+    this.useCloudDB = false; // 클라우드 DB 사용 여부
     this.init();
   }
 
@@ -10,23 +11,74 @@ class AdminIntegration {
     this.loadAdminData();
   }
 
-  // 관리자 데이터 로드
-  loadAdminData() {
+  // 관리자 데이터 로드 (클라우드 우선, 로컬 폴백)
+  async loadAdminData() {
     try {
+      // 클라우드 DB 사용 시도
+      if (this.useCloudDB && window.cloudDB) {
+        this.adminData = await window.cloudDB.getDatabase();
+        console.log('클라우드 관리자 설정 로드됨:', this.adminData);
+        return;
+      }
+      
+      // GitHub DB 사용 시도
+      if (window.githubDB) {
+        this.adminData = await window.githubDB.getDatabase();
+        console.log('GitHub 관리자 설정 로드됨:', this.adminData);
+        return;
+      }
+      
+      // 로컬스토리지 폴백
       const adminData = localStorage.getItem('gameDatabase');
       if (adminData) {
         this.adminData = JSON.parse(adminData);
-        console.log('관리자 설정 로드됨:', this.adminData);
+        console.log('로컬 관리자 설정 로드됨:', this.adminData);
       } else {
         console.log('관리자 설정이 없습니다. 기본 설정을 사용합니다.');
+        this.adminData = this.getDefaultData();
       }
     } catch (error) {
       console.error('관리자 설정 로드 실패:', error);
+      this.adminData = this.getDefaultData();
     }
   }
 
+  // 기본 데이터
+  getDefaultData() {
+    return {
+      games: {
+        roulette: {
+          id: 'roulette',
+          name: '룰렛',
+          enabled: true,
+          attempts: 3,
+          spinDuration: 4,
+          prizes: [
+            { id: 1, name: '1등: 스타벅스 기프티콘', probability: 5, color: '#ff6b6b' },
+            { id: 2, name: '2등: 5,000 포인트', probability: 10, color: '#4ecdc4' },
+            { id: 3, name: '3등: 3,000 포인트', probability: 15, color: '#45b7d1' },
+            { id: 4, name: '꽝: 다음 기회에', probability: 70, color: '#95a5a6' }
+          ],
+          lastUpdated: new Date().toISOString()
+        }
+      },
+      statistics: {
+        totalUsers: 1234,
+        todayPlays: 567,
+        totalPrizes: 89,
+        revenue: 2340000,
+        lastUpdated: new Date().toISOString()
+      }
+    };
+  }
+
   // 게임 설정 가져오기
-  getGameSettings(gameId) {
+  async getGameSettings(gameId) {
+    // 데이터가 없으면 다시 로드 시도
+    if (!this.adminData) {
+      await this.loadAdminData();
+    }
+    
     if (!this.adminData || !this.adminData.games) {
       return this.getDefaultSettings(gameId);
     }
@@ -87,8 +139,8 @@ class AdminIntegration {
   }
 
   // 룰렛 설정 적용
-  applyRouletteSettings() {
-    const settings = this.getGameSettings('roulette');
+  async applyRouletteSettings() {
+    const settings = await this.getGameSettings('roulette');
     console.log('룰렛 설정 가져옴:', settings);
     
     // 시도 횟수 설정

@@ -175,6 +175,7 @@
 
   <!-- 관리자 통합 스크립트 -->
   <script src="../assets/js/admin-integration.js"></script>
+  <script src="../assets/js/github-db.js"></script>
   
   <script>
     console.log('스크립트 로드됨!');
@@ -403,10 +404,10 @@
       console.log('DOM 로드됨, 관리자 설정 적용 시작');
       
       // 관리자 통합 스크립트가 로드될 때까지 대기
-      const checkAdminIntegration = () => {
+      const checkAdminIntegration = async () => {
         if (window.adminIntegration) {
           console.log('관리자 통합 스크립트 발견, 설정 적용');
-          window.adminIntegration.applyRouletteSettings();
+          await window.adminIntegration.applyRouletteSettings();
           
           // 설정 적용 후 데이터 업데이트
           setTimeout(() => {
