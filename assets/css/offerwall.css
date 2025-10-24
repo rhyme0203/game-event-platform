@@ -26,12 +26,13 @@
   text-align: center;
 }
 
-/* 포인트 표시 섹션 - 카카오톡 스타일 */
+/* 포인트 표시 섹션 - 깔끔한 흰색 */
 .points-section {
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 50%, #FFB6B6 100%);
-  color: white;
+  background: white;
+  color: #333;
   padding: 24px 20px;
   text-align: center;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .points-title {
