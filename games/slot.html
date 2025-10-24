@@ -6,6 +6,7 @@
   <title>럭키빤쓰 - 슬롯머신</title>
   <link rel="stylesheet" href="../assets/css/common.css">
   <link rel="stylesheet" href="../assets/css/ad-modal.css">
+  <link rel="stylesheet" href="../assets/css/point-system.css">
   
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
@@ -485,6 +486,25 @@
       if (e.target === resultModal) closeModal();
     });
 
+    // 포인트 시스템 추가
+    const pointSystemScript = document.createElement('script');
+    pointSystemScript.src = '../assets/js/point-system.js';
+    document.head.appendChild(pointSystemScript);
+    
+    // 포인트 지급 로직 (슬롯머신 결과에 따라)
+    function awardPoints(result) {
+      if (window.pointSystem) {
+        if (result.won) {
+          const pointAmount = result.prize === '잭팟' ? 1000 : 
+                            result.prize === '대박' ? 500 : 
+                            result.prize === '보너스' ? 200 : 50;
+          window.pointSystem.addPoints(pointAmount, `슬롯머신 당첨: ${result.prize}`);
+        } else {
+          window.pointSystem.addPoints(10, '슬롯머신 참여');
+        }
+      }
+    }
+    
     // 초기화
     initReels();
   </script>

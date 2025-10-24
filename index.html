@@ -6,6 +6,7 @@
   <title>럭키빤쓰 - 행운을 잡아라!</title>
   <link rel="stylesheet" href="assets/css/common.css">
   <link rel="stylesheet" href="assets/css/ads.css">
+  <link rel="stylesheet" href="assets/css/point-system.css">
   
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
@@ -368,6 +369,11 @@
       attendanceData.lastCheckDate = todayStr;
       attendanceData.totalDays++;
       
+      // 포인트 지급
+      if (window.pointSystem) {
+        window.pointSystem.addPoints(50, '출석체크');
+      }
+      
       // 연속 출석일수 계산
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
@@ -438,6 +444,9 @@
     }
 
   </script>
+  
+  <!-- 포인트 시스템 -->
+  <script src="assets/js/point-system.js"></script>
 </body>
 </html>
 

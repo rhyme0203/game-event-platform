@@ -1,0 +1,260 @@
+/* 포인트 시스템 스타일 */
+.point-system {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  font-family: 'Arial', sans-serif;
+  min-width: 200px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.point-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.point-title {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.point-icon {
+  font-size: 18px;
+  margin-right: 5px;
+}
+
+.point-amount {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.point-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.point-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.point-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.point-btn:active {
+  transform: translateY(0);
+}
+
+/* 포인트 히스토리 모달 */
+.point-history-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+}
+
+.point-history-modal.show {
+  display: flex;
+}
+
+.point-history-content {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.point-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.point-history-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.close-history-btn {
+  background: #ff6b6b;
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-history-btn:hover {
+  background: #ff5252;
+  transform: scale(1.1);
+}
+
+.point-history-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.point-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+}
+
+.point-history-item:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.point-history-item.earned {
+  border-left-color: #28a745;
+}
+
+.point-history-item.spent {
+  border-left-color: #dc3545;
+}
+
+.point-history-info {
+  flex: 1;
+}
+
+.point-history-description {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.point-history-date {
+  font-size: 12px;
+  color: #666;
+}
+
+.point-history-amount {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.point-history-amount.positive {
+  color: #28a745;
+}
+
+.point-history-amount.negative {
+  color: #dc3545;
+}
+
+/* 포인트 애니메이션 */
+.point-animation {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1500;
+  animation: pointFloat 2s ease-out forwards;
+}
+
+@keyframes pointFloat {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(1.2);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .point-system {
+    top: 10px;
+    right: 10px;
+    padding: 12px 15px;
+    min-width: 150px;
+  }
+  
+  .point-amount {
+    font-size: 20px;
+  }
+  
+  .point-history-content {
+    padding: 20px;
+    margin: 20px;
+  }
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .point-history-content {
+    background: #2d3748;
+    color: white;
+  }
+  
+  .point-history-item {
+    background: #4a5568;
+    color: white;
+  }
+  
+  .point-history-item:hover {
+    background: #5a6578;
+  }
+}
