@@ -142,14 +142,30 @@
     let isSpinning = false;
     let currentRotation = 0;
 
-    const wheel = document.getElementById('wheel');
-    const canvas = document.getElementById('rouletteCanvas');
-    const ctx = canvas.getContext('2d');
-    const spinBtn = document.getElementById('spinBtn');
-    const resultModal = document.getElementById('resultModal');
-    const prizeText = document.getElementById('prizeText');
-    const closeBtn = document.getElementById('closeBtn');
-    const remainingText = document.getElementById('remaining');
+    // DOM 요소
+    let wheel, canvas, ctx, spinBtn, resultModal, prizeText, closeBtn, remainingText;
+
+    // 페이지 로드 후 초기화
+    window.addEventListener('DOMContentLoaded', function() {
+      wheel = document.getElementById('wheel');
+      canvas = document.getElementById('rouletteCanvas');
+      ctx = canvas.getContext('2d');
+      spinBtn = document.getElementById('spinBtn');
+      resultModal = document.getElementById('resultModal');
+      prizeText = document.getElementById('prizeText');
+      closeBtn = document.getElementById('closeBtn');
+      remainingText = document.getElementById('remaining');
+
+      // 이벤트 리스너
+      spinBtn.addEventListener('click', spin);
+      closeBtn.addEventListener('click', closeModal);
+      resultModal.addEventListener('click', (e) => {
+        if (e.target === resultModal) closeModal();
+      });
+
+      // 룰렛 초기화
+      createWheel();
+    });
 
     // Canvas 크기 설정
     function setCanvasSize() {
@@ -161,6 +177,8 @@
 
     // 룰렛 원판 그리기
     function drawWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2;
       const radius = canvas.width / 2;
@@ -201,8 +219,10 @@
 
     // 초기 설정
     function createWheel() {
-      setCanvasSize();
-      window.addEventListener('resize', setCanvasSize);
+      setTimeout(() => {
+        setCanvasSize();
+        window.addEventListener('resize', setCanvasSize);
+      }, 100);
     }
 
     // 확률에 따른 경품 선택
@@ -221,7 +241,12 @@
 
     // 룰렛 돌리기
     function spin() {
-      if (isSpinning || remaining <= 0) return;
+      console.log('룰렛 돌리기 클릭!');
+      
+      if (isSpinning || remaining <= 0) {
+        console.log('이미 돌아가는 중이거나 기회 소진');
+        return;
+      }
       
       isSpinning = true;
       spinBtn.disabled = true;
@@ -261,16 +286,6 @@
     function closeModal() {
       resultModal.classList.remove('show');
     }
-
-    // 이벤트 리스너
-    spinBtn.addEventListener('click', spin);
-    closeBtn.addEventListener('click', closeModal);
-    resultModal.addEventListener('click', (e) => {
-      if (e.target === resultModal) closeModal();
-    });
-
-    // 초기화
-    createWheel();
   </script>
 </body>
 </html>
