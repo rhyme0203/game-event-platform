@@ -605,6 +605,38 @@
     window.addEventListener('DOMContentLoaded', async function() {
       console.log('DOM 로드됨, SQL API 설정 적용 시작');
       
+      // 환경 감지: 로컬 환경에서는 SQL API 사용하지 않음
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      if (isLocalhost) {
+        console.log('로컬 환경 감지: 기본 설정 사용');
+        
+        // 기본 경품 데이터 사용
+        prizes = defaultPrizes;
+        console.log('기본 경품 데이터 사용:', prizes);
+        
+        // localStorage에서 시도 횟수 로드
+        const savedAttempts = localStorage.getItem('rouletteMaxAttempts');
+        if (savedAttempts) {
+          remaining = parseInt(savedAttempts);
+          if (remainingText) {
+            remainingText.textContent = remaining;
+          }
+        } else {
+          remaining = 3; // 기본값
+          if (remainingText) {
+            remainingText.textContent = remaining;
+          }
+        }
+        
+        // 로딩 완료
+        isLoading = false;
+        isDataLoaded = true;
+        showGameUI();
+        console.log('로컬 환경 게임 설정 로딩 완료');
+        return;
+      }
+      
       try {
         // SQL API 존재 확인
         if (!window.sqlAPI) {
