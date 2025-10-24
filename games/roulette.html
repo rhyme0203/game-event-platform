@@ -198,12 +198,12 @@
         <div class="ad-modal-ad">
           <!-- 룰렛광고 -->
           <ins class="adsbygoogle"
-               style="display:block"
+               style="display:block;width:100%;height:250px;"
                data-ad-client="ca-pub-8451876651536601"
                data-ad-slot="4076493332"
                data-ad-format="auto"
                data-full-width-responsive="true"></ins>
-          <div class="ad-modal-ad-placeholder" style="display:none;">
+          <div class="ad-modal-ad-placeholder" id="adPlaceholder">
             광고 로딩 중...
           </div>
         </div>
@@ -530,9 +530,13 @@
     }
 
     // Google AdSense 초기화 (중복 방지)
+    console.log('AdSense 초기화 시작');
+    console.log('adsbygoogle 존재:', typeof adsbygoogle !== 'undefined');
+    
     if (typeof adsbygoogle !== 'undefined' && adsbygoogle.loaded) {
-      // 이미 로드된 경우 스킵
+      console.log('AdSense 이미 로드됨');
     } else {
+      console.log('AdSense 초기화 시도');
       (adsbygoogle = window.adsbygoogle || []).push({});
     }
 
@@ -639,6 +643,30 @@
       console.log('광고 모달 표시');
       const modal = document.getElementById('adModal');
       modal.classList.add('show');
+      
+      // 광고 초기화 (모달이 표시된 후)
+      setTimeout(() => {
+        try {
+          if (typeof adsbygoogle !== 'undefined') {
+            console.log('광고 초기화 시도');
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            
+            // 광고 로딩 완료 후 플레이스홀더 숨기기
+            setTimeout(() => {
+              const placeholder = document.getElementById('adPlaceholder');
+              if (placeholder) {
+                placeholder.style.display = 'none';
+                console.log('광고 플레이스홀더 숨김');
+              }
+            }, 2000);
+          } else {
+            console.warn('AdSense 스크립트가 로드되지 않았습니다.');
+            // AdSense 스크립트가 없으면 플레이스홀더 유지
+          }
+        } catch (error) {
+          console.error('광고 초기화 실패:', error);
+        }
+      }, 100);
       
       // 카운트다운은 자동으로 시작하지 않음
       // 사용자가 "게임 시작하기" 버튼을 눌러야만 시작
