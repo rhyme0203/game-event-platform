@@ -1,0 +1,27 @@
+{
+  "name": "game-event-platform-backend",
+  "version": "1.0.0",
+  "description": "럭키빤쓰 게임 이벤트 플랫폼 백엔드 API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "init-db": "node scripts/init-database.js",
+    "setup-db": "node scripts/setup-database.js",
+    "reset-db": "rm -f database/game_platform.db && npm run setup-db"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["game", "event", "platform", "api"],
+  "author": "럭키빤쓰",
+  "license": "MIT"
+}

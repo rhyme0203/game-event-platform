@@ -29,6 +29,14 @@
       overflow: hidden;
     }
 
+    .roulette-wheel.spinning {
+      transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    }
+
+    .roulette-wheel.stopped {
+      transition: none;
+    }
+
     .roulette-canvas {
       width: 100%;
       height: 100%;
@@ -173,7 +181,9 @@
     </div>
   </div>
 
-  <!-- 관리자 통합 스크립트 -->
+  <!-- SQL API 스크립트 -->
+  <script src="../assets/js/sql-api.js"></script>
+  <!-- 관리자 통합 스크립트 (폴백용) -->
   <script src="../assets/js/admin-integration.js"></script>
   <script src="../assets/js/github-db.js"></script>
   
@@ -224,6 +234,7 @@
       }
       
       const selectedIndex = selectPrize();
+      const selectedPrize = prizes[selectedIndex]; // selectedPrize 변수 정의
       const sectionAngle = 360 / prizes.length;
       
       // 최소 5바퀴 + 선택된 섹션으로 이동
@@ -231,19 +242,43 @@
       const targetRotation = minRotation + (360 - (selectedIndex * sectionAngle)) - (sectionAngle / 2);
       currentRotation += targetRotation;
       
+      console.log('선택된 경품:', selectedPrize.name);
       console.log('회전 각도:', currentRotation);
       
       if (wheel) {
+        // 회전 시작 클래스 추가
+        wheel.classList.remove('stopped');
+        wheel.classList.add('spinning');
+        
+        // 강제 리플로우 후 회전 적용
+        wheel.offsetHeight;
         wheel.style.transform = `rotate(${currentRotation}deg)`;
       }
       
+      // 회전 완료 후 처리
       setTimeout(() => {
+        console.log('회전 완료, 결과 처리 시작');
+        
+        // 회전 완료 클래스로 변경
+        if (wheel) {
+          wheel.classList.remove('spinning');
+          wheel.classList.add('stopped');
+        }
+        
+        // 상태 초기화
         isSpinning = false;
         remaining--;
         if (remainingText) remainingText.textContent = remaining;
         
-        // 게임 플레이 기록
-        if (window.adminIntegration) {
+        // 게임 플레이 기록 (SQL API 우선, 폴백)
+        if (window.sqlAdminIntegration) {
+          window.sqlAdminIntegration.recordGamePlay('roulette', {
+            won: selectedPrize.probability > 0,
+            prize: selectedPrize.name,
+            value: selectedPrize.probability > 0 ? 1000 : 0,
+            timestamp: new Date().toISOString()
+          });
+        } else if (window.adminIntegration) {
           window.adminIntegration.recordGamePlay('roulette', {
             won: selectedPrize.probability > 0,
             prize: selectedPrize.name,
@@ -251,6 +286,7 @@
           });
         }
         
+        // 버튼 상태 업데이트
         if (remaining > 0) {
           if (spinBtn) {
             spinBtn.disabled = false;
@@ -262,8 +298,10 @@
           }
         }
         
-        showResult(prizes[selectedIndex].name);
-      }, 4000);
+        // 결과 표시
+        showResult(selectedPrize.name);
+        console.log('결과 표시 완료');
+      }, spinDuration); // 설정된 회전 시간 사용
     };
 
     // 페이지 로드 후 초기화
@@ -301,6 +339,13 @@
       // 룰렛 초기화
       console.log('룰렛 초기화 시작');
       createWheel();
+      
+      // 초기 상태 설정
+      if (wheel) {
+        wheel.classList.add('stopped');
+        wheel.classList.remove('spinning');
+      }
+      
       console.log('=== 초기화 완료 ===');
     });
 
@@ -383,13 +428,27 @@
 
     // 결과 표시
     function showResult(prize) {
-      prizeText.textContent = prize;
-      resultModal.classList.add('show');
+      console.log('결과 표시:', prize);
+      if (prizeText) {
+        prizeText.textContent = prize;
+      }
+      if (resultModal) {
+        resultModal.classList.add('show');
+      }
     }
 
     // 모달 닫기
     function closeModal() {
-      resultModal.classList.remove('show');
+      console.log('모달 닫기');
+      if (resultModal) {
+        resultModal.classList.remove('show');
+      }
+      
+      // 모달이 닫힌 후 상태 완전 초기화
+      setTimeout(() => {
+        isSpinning = false;
+        console.log('상태 초기화 완료, isSpinning:', isSpinning);
+      }, 100);
     }
 
     // Google AdSense 초기화 (중복 방지)
@@ -399,44 +458,54 @@
       (adsbygoogle = window.adsbygoogle || []).push({});
     }
 
-    // 관리자 설정 적용
-    window.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM 로드됨, 관리자 설정 적용 시작');
+    // SQL API 설정 적용
+    window.addEventListener('DOMContentLoaded', async function() {
+      console.log('DOM 로드됨, SQL API 설정 적용 시작');
       
-      // 관리자 통합 스크립트가 로드될 때까지 대기
-      const checkAdminIntegration = async () => {
-        if (window.adminIntegration) {
-          console.log('관리자 통합 스크립트 발견, 설정 적용');
-          await window.adminIntegration.applyRouletteSettings();
-          
-          // 설정 적용 후 데이터 업데이트
-          setTimeout(() => {
-            if (window.prizeData) {
-              prizes = window.prizeData;
-              console.log('관리자 경품 데이터 적용됨:', prizes);
-              // 룰렛 다시 그리기
-              if (typeof drawRoulette === 'function') {
-                drawRoulette();
+      try {
+        // 사용자 등록
+        await window.sqlAPI.registerUser();
+        console.log('사용자 등록 완료');
+        
+        // SQL API 통합 스크립트가 로드될 때까지 대기
+        const checkSQLIntegration = async () => {
+          if (window.sqlAdminIntegration) {
+            console.log('SQL 통합 스크립트 발견, 설정 적용');
+            await window.sqlAdminIntegration.applyRouletteSettings();
+            
+            // 설정 적용 후 데이터 업데이트
+            setTimeout(() => {
+              if (window.prizeData) {
+                prizes = window.prizeData;
+                console.log('SQL 경품 데이터 적용됨:', prizes);
+                // 룰렛 다시 그리기
+                if (typeof drawWheel === 'function') {
+                  drawWheel();
+                }
               }
-            }
-            if (window.maxAttempts) {
-              remaining = window.maxAttempts;
-              console.log('관리자 시도 횟수 적용됨:', remaining);
-              if (remainingText) {
-                remainingText.textContent = remaining;
+              if (window.maxAttempts) {
+                remaining = window.maxAttempts;
+                console.log('SQL 시도 횟수 적용됨:', remaining);
+                if (remainingText) {
+                  remainingText.textContent = remaining;
+                }
               }
-            }
-            if (window.spinDuration) {
-              console.log('관리자 회전 시간 적용됨:', window.spinDuration);
-            }
-          }, 100);
-        } else {
-          console.log('관리자 통합 스크립트를 찾을 수 없습니다, 100ms 후 재시도');
-          setTimeout(checkAdminIntegration, 100);
-        }
-      };
-      
-      checkAdminIntegration();
+              if (window.spinDuration) {
+                console.log('SQL 회전 시간 적용됨:', window.spinDuration);
+              }
+            }, 100);
+          } else {
+            console.log('SQL 통합 스크립트를 찾을 수 없습니다, 100ms 후 재시도');
+            setTimeout(checkSQLIntegration, 100);
+          }
+        };
+        
+        checkSQLIntegration();
+      } catch (error) {
+        console.error('SQL API 설정 적용 실패:', error);
+        // 폴백: 기존 로컬스토리지 방식 사용
+        console.log('폴백: 로컬스토리지 방식 사용');
+      }
     });
 
     // 관리자 설정 변경 이벤트 리스너

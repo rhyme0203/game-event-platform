@@ -20,3 +20,17 @@ package-lock.json
 .env
 .env.local
 
+# SQLite 데이터베이스 파일 (로컬 개발용)
+backend/database/game_platform.db
+backend/database/*.db
+
+# Node.js 의존성
+backend/node_modules/
+backend/package-lock.json
+
+# 로그 파일
+backend/logs/
+*.log
+
+# 환경 변수
+backend/.env
