@@ -36,8 +36,8 @@ class GitHubDatabase {
   // 게임 데이터 로드
   async loadGameData() {
     try {
-      // 루트 경로에서 데이터 파일 로드
-      const response = await fetch('../data/game-database.json');
+      // 절대 경로로 데이터 파일 로드
+      const response = await fetch('/data/game-database.json');
       if (response.ok) {
         const data = await response.json();
         this.fallbackData = data;
