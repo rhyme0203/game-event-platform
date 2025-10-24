@@ -15,6 +15,29 @@ class GitHubDatabase {
   // 폴백 데이터 로드
   loadFallbackData() {
     try {
+      // 실제 데이터 파일 로드 시도
+      this.loadGameData();
+    } catch (error) {
+      console.error('데이터 로드 실패:', error);
+      this.fallbackData = this.getDefaultData();
+    }
+  }
+  
+  // 게임 데이터 로드
+  async loadGameData() {
+    try {
+      const response = await fetch('./data/game-database.json');
+      if (response.ok) {
+        const data = await response.json();
+        this.fallbackData = data;
+        console.log('게임 데이터 파일 로드됨:', data);
+      } else {
+        throw new Error('데이터 파일을 찾을 수 없습니다');
+      }
+    } catch (error) {
+      console.warn('데이터 파일 로드 실패, 로컬 데이터 사용:', error);
+      
+      // 로컬 데이터 확인
       const localData = localStorage.getItem('gameDatabase');
       if (localData) {
         this.fallbackData = JSON.parse(localData);
@@ -23,9 +46,6 @@ class GitHubDatabase {
         this.fallbackData = this.getDefaultData();
         console.log('기본 폴백 데이터 로드됨');
       }
-    } catch (error) {
-      console.error('폴백 데이터 로드 실패:', error);
-      this.fallbackData = this.getDefaultData();
     }
   }
 

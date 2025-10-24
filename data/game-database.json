@@ -1,0 +1,65 @@
+{
+  "games": {
+    "roulette": {
+      "id": "roulette",
+      "name": "룰렛",
+      "enabled": true,
+      "attempts": 3,
+      "spinDuration": 4,
+      "prizes": [
+        { "id": 1, "name": "1등: 스타벅스 기프티콘", "probability": 5, "color": "#ff6b6b" },
+        { "id": 2, "name": "2등: 5,000 포인트", "probability": 10, "color": "#4ecdc4" },
+        { "id": 3, "name": "3등: 3,000 포인트", "probability": 15, "color": "#45b7d1" },
+        { "id": 4, "name": "꽝: 다음 기회에", "probability": 70, "color": "#95a5a6" }
+      ],
+      "lastUpdated": "2024-01-01T00:00:00.000Z"
+    },
+    "slot": {
+      "id": "slot",
+      "name": "슬롯머신",
+      "enabled": true,
+      "attempts": 3,
+      "prizes": [
+        { "id": 1, "name": "1등: 아이폰 15", "probability": 1, "color": "#ff6b6b" },
+        { "id": 2, "name": "2등: 에어팟", "probability": 5, "color": "#4ecdc4" },
+        { "id": 3, "name": "3등: 1,000 포인트", "probability": 20, "color": "#45b7d1" },
+        { "id": 4, "name": "꽝", "probability": 74, "color": "#95a5a6" }
+      ],
+      "lastUpdated": "2024-01-01T00:00:00.000Z"
+    },
+    "scratch": {
+      "id": "scratch",
+      "name": "스크래치",
+      "enabled": true,
+      "attempts": 3,
+      "prizes": [
+        { "id": 1, "name": "1등: 10,000 포인트", "probability": 10, "color": "#ff6b6b" },
+        { "id": 2, "name": "2등: 5,000 포인트", "probability": 20, "color": "#4ecdc4" },
+        { "id": 3, "name": "3등: 1,000 포인트", "probability": 30, "color": "#45b7d1" },
+        { "id": 4, "name": "꽝", "probability": 40, "color": "#95a5a6" }
+      ],
+      "lastUpdated": "2024-01-01T00:00:00.000Z"
+    },
+    "capsule": {
+      "id": "capsule",
+      "name": "캡슐뽑기",
+      "enabled": true,
+      "attempts": 3,
+      "prizes": [
+        { "id": 1, "name": "1등: 맥북 프로", "probability": 2, "color": "#ff6b6b" },
+        { "id": 2, "name": "2등: 아이패드", "probability": 8, "color": "#4ecdc4" },
+        { "id": 3, "name": "3등: 2,000 포인트", "probability": 25, "color": "#45b7d1" },
+        { "id": 4, "name": "꽝", "probability": 65, "color": "#95a5a6" }
+      ],
+      "lastUpdated": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  "settings": {
+    "global": {
+      "siteName": "럭키빤쓰",
+      "maintenance": false,
+      "theme": "default"
+    }
+  },
+  "lastUpdated": "2024-01-01T00:00:00.000Z"
+}
