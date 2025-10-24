@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 연동 테스트</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      padding: 20px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .btn:hover {
+      background: #2980b9;
+    }
+    .log {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 관리자 연동 테스트</h1>
+  
+  <div class="test-section">
+    <h3>1. 테스트 데이터 생성</h3>
+    <button class="btn" onclick="createTestData()">테스트 데이터 생성</button>
+    <button class="btn" onclick="clearData()">데이터 초기화</button>
+  </div>
+
+  <div class="test-section">
+    <h3>2. 관리자 설정 확인</h3>
+    <button class="btn" onclick="checkAdminSettings()">관리자 설정 확인</button>
+    <div class="log" id="adminLog">클릭하여 확인</div>
+  </div>
+
+  <div class="test-section">
+    <h3>3. 게임 연동 테스트</h3>
+    <button class="btn" onclick="testGameIntegration()">게임 연동 테스트</button>
+    <div class="log" id="gameLog">클릭하여 확인</div>
+  </div>
+
+  <div class="test-section">
+    <h3>4. 실시간 연동 테스트</h3>
+    <button class="btn" onclick="simulateAdminChange()">관리자 설정 변경 시뮬레이션</button>
+    <div class="log" id="realtimeLog">클릭하여 확인</div>
+  </div>
+
+  <div class="test-section">
+    <h3>5. 게임 테스트</h3>
+    <a href="games/roulette.html" class="btn" target="_blank">룰렛 게임 테스트</a>
+    <a href="admin/index.html" class="btn" target="_blank">관리자 페이지</a>
+  </div>
+
+  <script src="assets/js/admin-integration.js"></script>
+  <script>
+    // 테스트 데이터 생성
+    function createTestData() {
+      const testData = {
+        games: {
+          roulette: {
+            id: 'roulette',
+            name: '룰렛',
+            enabled: true,
+            attempts: 5,
+            spinDuration: 3,
+            prizes: [
+              { id: 1, name: '🎯 테스트 1등: 50,000원', probability: 5, color: '#ff6b6b' },
+              { id: 2, name: '🎁 테스트 2등: 20,000원', probability: 15, color: '#4ecdc4' },
+              { id: 3, name: '🎉 테스트 3등: 10,000원', probability: 25, color: '#45b7d1' },
+              { id: 4, name: '😢 꽝', probability: 55, color: '#95a5a6' }
+            ],
+            lastUpdated: new Date().toISOString()
+          }
+        },
+        statistics: {
+          totalUsers: 100,
+          todayPlays: 50,
+          totalPrizes: 10,
+          revenue: 100000,
+          lastUpdated: new Date().toISOString()
+        }
+      };
+      
+      localStorage.setItem('gameDatabase', JSON.stringify(testData));
+      alert('테스트 데이터가 생성되었습니다!');
+      checkAdminSettings();
+    }
+
+    // 데이터 초기화
+    function clearData() {
+      localStorage.removeItem('gameDatabase');
+      alert('데이터가 초기화되었습니다!');
+      checkAdminSettings();
+    }
+
+    // 관리자 설정 확인
+    function checkAdminSettings() {
+      const log = document.getElementById('adminLog');
+      let output = '';
+      
+      try {
+        const dbData = localStorage.getItem('gameDatabase');
+        if (dbData) {
+          const parsed = JSON.parse(dbData);
+          output += '📊 데이터베이스 상태:\n';
+          output += JSON.stringify(parsed, null, 2) + '\n\n';
+        } else {
+          output += '❌ 데이터베이스가 없습니다.\n\n';
+        }
+        
+        if (window.adminIntegration) {
+          const settings = window.adminIntegration.getGameSettings('roulette');
+          output += '🎡 룰렛 설정:\n';
+          output += JSON.stringify(settings, null, 2) + '\n\n';
+        } else {
+          output += '❌ 관리자 통합 스크립트가 로드되지 않았습니다.\n\n';
+        }
+        
+        output += '🌐 전역 변수:\n';
+        output += `window.prizeData: ${JSON.stringify(window.prizeData)}\n`;
+        output += `window.maxAttempts: ${window.maxAttempts}\n`;
+        output += `window.spinDuration: ${window.spinDuration}\n`;
+        
+      } catch (error) {
+        output += '❌ 오류: ' + error.message;
+      }
+      
+      log.textContent = output;
+    }
+
+    // 게임 연동 테스트
+    function testGameIntegration() {
+      const log = document.getElementById('gameLog');
+      let output = '';
+      
+      try {
+        if (window.adminIntegration) {
+          output += '✅ 관리자 통합 스크립트 로드됨\n';
+          
+          // 룰렛 설정 적용
+          window.adminIntegration.applyRouletteSettings();
+          output += '✅ 룰렛 설정 적용됨\n';
+          
+          // 전역 변수 확인
+          output += `\n📊 전역 변수 상태:\n`;
+          output += `window.prizeData: ${JSON.stringify(window.prizeData)}\n`;
+          output += `window.maxAttempts: ${window.maxAttempts}\n`;
+          output += `window.spinDuration: ${window.spinDuration}\n`;
+          
+          // 이벤트 리스너 테스트
+          window.addEventListener('adminSettingsChanged', function(event) {
+            output += `\n🔄 설정 변경 이벤트 수신: ${JSON.stringify(event.detail)}\n`;
+            log.textContent = output;
+          });
+          
+        } else {
+          output += '❌ 관리자 통합 스크립트가 로드되지 않았습니다.';
+        }
+      } catch (error) {
+        output += '❌ 오류: ' + error.message;
+      }
+      
+      log.textContent = output;
+    }
+
+    // 실시간 연동 테스트
+    function simulateAdminChange() {
+      const log = document.getElementById('realtimeLog');
+      let output = '';
+      
+      try {
+        // 관리자 설정 변경 시뮬레이션
+        const newSettings = {
+          id: 'roulette',
+          name: '룰렛',
+          enabled: true,
+          attempts: 7,
+          spinDuration: 2,
+          prizes: [
+            { id: 1, name: '🔥 실시간 1등: 100,000원', probability: 2, color: '#ff6b6b' },
+            { id: 2, name: '💎 실시간 2등: 50,000원', probability: 8, color: '#4ecdc4' },
+            { id: 3, name: '🎁 실시간 3등: 20,000원', probability: 20, color: '#45b7d1' },
+            { id: 4, name: '😢 꽝', probability: 70, color: '#95a5a6' }
+          ],
+          lastUpdated: new Date().toISOString()
+        };
+        
+        // 데이터베이스 업데이트
+        const dbData = JSON.parse(localStorage.getItem('gameDatabase') || '{}');
+        dbData.games = dbData.games || {};
+        dbData.games.roulette = newSettings;
+        localStorage.setItem('gameDatabase', JSON.stringify(dbData));
+        
+        output += '✅ 관리자 설정 변경됨\n';
+        output += JSON.stringify(newSettings, null, 2) + '\n\n';
+        
+        // 설정 변경 이벤트 발생
+        if (window.adminIntegration) {
+          window.adminIntegration.applyRouletteSettings();
+          output += '✅ 설정 적용됨\n';
+          
+          // 전역 변수 확인
+          output += `\n📊 업데이트된 전역 변수:\n`;
+          output += `window.prizeData: ${JSON.stringify(window.prizeData)}\n`;
+          output += `window.maxAttempts: ${window.maxAttempts}\n`;
+          output += `window.spinDuration: ${window.spinDuration}\n`;
+        }
+        
+      } catch (error) {
+        output += '❌ 오류: ' + error.message;
+      }
+      
+      log.textContent = output;
+    }
+
+    // 페이지 로드 시 초기화
+    window.addEventListener('DOMContentLoaded', function() {
+      console.log('연동 테스트 페이지 로드됨');
+      checkAdminSettings();
+    });
+  </script>
+</body>
+</html>

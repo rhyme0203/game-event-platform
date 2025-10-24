@@ -115,6 +115,11 @@ class AdminIntegration {
     }
 
     console.log('룰렛 설정 적용 완료:', settings);
+    
+    // 설정 변경 이벤트 발생
+    window.dispatchEvent(new CustomEvent('adminSettingsChanged', {
+      detail: { gameType: 'roulette', settings: settings }
+    }));
   }
 
   // 슬롯머신 설정 적용

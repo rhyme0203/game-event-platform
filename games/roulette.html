@@ -401,24 +401,73 @@
     // 관리자 설정 적용
     window.addEventListener('DOMContentLoaded', function() {
       console.log('DOM 로드됨, 관리자 설정 적용 시작');
-      if (window.adminIntegration) {
-        console.log('관리자 통합 스크립트 발견, 설정 적용');
-        window.adminIntegration.applyRouletteSettings();
+      
+      // 관리자 통합 스크립트가 로드될 때까지 대기
+      const checkAdminIntegration = () => {
+        if (window.adminIntegration) {
+          console.log('관리자 통합 스크립트 발견, 설정 적용');
+          window.adminIntegration.applyRouletteSettings();
+          
+          // 설정 적용 후 데이터 업데이트
+          setTimeout(() => {
+            if (window.prizeData) {
+              prizes = window.prizeData;
+              console.log('관리자 경품 데이터 적용됨:', prizes);
+              // 룰렛 다시 그리기
+              if (typeof drawRoulette === 'function') {
+                drawRoulette();
+              }
+            }
+            if (window.maxAttempts) {
+              remaining = window.maxAttempts;
+              console.log('관리자 시도 횟수 적용됨:', remaining);
+              if (remainingText) {
+                remainingText.textContent = remaining;
+              }
+            }
+            if (window.spinDuration) {
+              console.log('관리자 회전 시간 적용됨:', window.spinDuration);
+            }
+          }, 100);
+        } else {
+          console.log('관리자 통합 스크립트를 찾을 수 없습니다, 100ms 후 재시도');
+          setTimeout(checkAdminIntegration, 100);
+        }
+      };
+      
+      checkAdminIntegration();
+    });
+
+    // 관리자 설정 변경 이벤트 리스너
+    window.addEventListener('adminSettingsChanged', function(event) {
+      console.log('관리자 설정 변경 이벤트 수신:', event.detail);
+      if (event.detail.gameType === 'roulette') {
+        const settings = event.detail.settings;
         
-        // 설정 적용 후 데이터 업데이트
-        if (window.prizeData) {
-          prizes = window.prizeData;
-          console.log('관리자 경품 데이터 적용됨:', prizes);
+        // 경품 데이터 업데이트
+        if (settings.prizes && settings.prizes.length > 0) {
+          prizes = settings.prizes.map((prize, index) => ({
+            id: index + 1,
+            name: prize.name,
+            probability: prize.probability,
+            color: prize.color || '#95a5a6'
+          }));
+          console.log('실시간 경품 데이터 업데이트:', prizes);
+          
+          // 룰렛 다시 그리기
+          if (typeof drawRoulette === 'function') {
+            drawRoulette();
+          }
         }
-        if (window.maxAttempts) {
-          remaining = window.maxAttempts;
-          console.log('관리자 시도 횟수 적용됨:', remaining);
+        
+        // 시도 횟수 업데이트
+        if (settings.attempts) {
+          remaining = settings.attempts;
+          if (remainingText) {
+            remainingText.textContent = remaining;
+          }
+          console.log('실시간 시도 횟수 업데이트:', remaining);
         }
-        if (window.spinDuration) {
-          console.log('관리자 회전 시간 적용됨:', window.spinDuration);
-        }
-      } else {
-        console.log('관리자 통합 스크립트를 찾을 수 없습니다');
       }
     });
     
