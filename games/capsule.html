@@ -285,6 +285,113 @@
       }, 300);
     }
 
+    // 광고 모달 표시
+    function showAdModal() {
+      console.log('광고 모달 표시');
+      const modal = document.getElementById('adModal');
+      modal.classList.add('show');
+    }
+    
+    // 광고 모달 닫기
+    function closeAdModal() {
+      const modal = document.getElementById('adModal');
+      modal.classList.remove('show');
+    }
+    
+    // 광고 모달 닫고 스핀 시작
+    function closeAdModalAndSpin() {
+      console.log('X 버튼으로 모달 닫기');
+      closeAdModal();
+      setTimeout(() => {
+        if (!hasSelected && selectedCapsule) {
+          selectCapsule();
+        }
+      }, 300);
+    }
+    
+    // 게임 시작
+    function startGame() {
+      console.log('게임 시작!');
+      startCountdown();
+    }
+    
+    // 광고 건너뛰기
+    function skipAd() {
+      console.log('광고 건너뛰기');
+      closeAdModal();
+      setTimeout(() => {
+        if (!hasSelected && selectedCapsule) {
+          selectCapsule();
+        }
+      }, 300);
+    }
+    
+    // 카운트다운 시작
+    function startCountdown() {
+      const countdown = document.getElementById('countdown');
+      const countdownText = document.getElementById('countdownText');
+      const startBtn = document.getElementById('startGameBtn');
+      
+      countdown.style.display = 'block';
+      startBtn.style.display = 'none';
+      
+      let timeLeft = 5;
+      countdownText.textContent = timeLeft;
+      
+      const timer = setInterval(() => {
+        timeLeft--;
+        countdownText.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          closeAdModal();
+          setTimeout(() => {
+            if (!hasSelected && selectedCapsule) {
+              selectCapsule();
+            }
+          }, 300);
+        }
+      }, 1000);
+    }
+    
+    // 캡슐 선택 (원래 로직)
+    function selectCapsule() {
+      if (!selectedCapsule) return;
+      
+      hasSelected = true;
+      selectedCapsule.classList.add('opening');
+      
+      // 선택한 캡슐의 경품 (랜덤)
+      const prizeIndex = Math.floor(Math.random() * prizes.length);
+      const prize = prizes[prizeIndex];
+      
+      setTimeout(() => {
+        selectedCapsule.classList.add('opened');
+        selectedCapsule.innerHTML = prize.emoji;
+        
+        // 나머지 캡슐들도 열기
+        capsules.forEach(c => {
+          if (c !== selectedCapsule) {
+            c.classList.add('opened');
+            const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+            c.textContent = randomPrize.emoji;
+          }
+        });
+        
+        // 결과 모달 표시
+        setTimeout(() => {
+          showResult(prize.name);
+        }, 1000);
+      }, 2000);
+    }
+
+    // Google AdSense 초기화 (중복 방지)
+    if (typeof adsbygoogle !== 'undefined' && adsbygoogle.loaded) {
+      // 이미 로드된 경우 스킵
+    } else {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
+    
     // 이벤트 리스너
     closeBtn.addEventListener('click', closeModal);
     resultModal.addEventListener('click', (e) => {

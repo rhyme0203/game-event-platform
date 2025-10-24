@@ -376,8 +376,12 @@
       resultModal.classList.remove('show');
     }
 
-    // Google AdSense 초기화
-    (adsbygoogle = window.adsbygoogle || []).push({});
+    // Google AdSense 초기화 (중복 방지)
+    if (typeof adsbygoogle !== 'undefined' && adsbygoogle.loaded) {
+      // 이미 로드된 경우 스킵
+    } else {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
     
     // 광고 모달 표시
     function showAdModal() {

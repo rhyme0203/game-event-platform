@@ -148,8 +148,12 @@
 
 
   <script>
-    // Google AdSense 초기화
-    (adsbygoogle = window.adsbygoogle || []).push({});
+    // Google AdSense 초기화 (중복 방지)
+    if (typeof adsbygoogle !== 'undefined' && adsbygoogle.loaded) {
+      // 이미 로드된 경우 스킵
+    } else {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    }
     
     // 광고 클릭 추적
     function trackAdClick(adType) {
