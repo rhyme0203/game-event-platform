@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>럭키빤쓰 - 슬롯머신</title>
   <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/ad-modal.css">
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
+       crossorigin="anonymous"></script>
   <style>
     .slot-machine {
       background: linear-gradient(145deg, #2c3e50, #34495e);
@@ -199,6 +204,44 @@
     </div>
   </div>
 
+  <!-- 광고 모달 -->
+  <div class="ad-modal" id="adModal">
+    <div class="ad-modal-content">
+      <button class="ad-modal-close" onclick="closeAdModalAndSpin()">&times;</button>
+      
+      <div class="ad-modal-header">
+        <div class="ad-modal-title">🎯 특별 이벤트!</div>
+        <div class="ad-modal-subtitle">럭키빤쓰 프리미엄 서비스를 확인해보세요</div>
+      </div>
+      
+      <div class="ad-modal-body">
+        <div class="ad-modal-ad">
+          <!-- Google AdSense 광고 -->
+          <ins class="adsbygoogle"
+               style="display:block;width:300px;height:250px;"
+               data-ad-client="ca-pub-8451876651536601"
+               data-ad-slot="5939741579"></ins>
+          <div class="ad-modal-ad-placeholder" style="display:none;">
+            광고 로딩 중...
+          </div>
+        </div>
+        
+        <div class="ad-modal-countdown" id="countdown" style="display:none;">
+          <span id="countdownText">5</span>초 후 게임 시작
+        </div>
+      </div>
+      
+      <div class="ad-modal-footer">
+        <button class="ad-modal-btn ad-modal-btn-primary" onclick="startGame()" id="startGameBtn">
+          게임 시작하기
+        </button>
+        <button class="ad-modal-btn ad-modal-btn-secondary" onclick="skipAd()">
+          광고 건너뛰기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const symbols = ['🍒', '🍋', '🍊', '⭐', '🍇', '🍉', '💎', '🎰'];
     const prizes = {
@@ -232,6 +275,75 @@
           reel.appendChild(symbol);
         }
       }
+    }
+
+    // 광고 모달 표시
+    function showAdModal() {
+      console.log('광고 모달 표시');
+      const modal = document.getElementById('adModal');
+      modal.classList.add('show');
+    }
+    
+    // 광고 모달 닫기
+    function closeAdModal() {
+      const modal = document.getElementById('adModal');
+      modal.classList.remove('show');
+    }
+    
+    // 광고 모달 닫고 스핀 시작
+    function closeAdModalAndSpin() {
+      console.log('X 버튼으로 모달 닫기');
+      closeAdModal();
+      setTimeout(() => {
+        if (!isSpinning) {
+          spin();
+        }
+      }, 300);
+    }
+    
+    // 게임 시작
+    function startGame() {
+      console.log('게임 시작!');
+      startCountdown();
+    }
+    
+    // 광고 건너뛰기
+    function skipAd() {
+      console.log('광고 건너뛰기');
+      closeAdModal();
+      setTimeout(() => {
+        if (!isSpinning) {
+          spin();
+        }
+      }, 300);
+    }
+    
+    // 카운트다운 시작
+    function startCountdown() {
+      const countdown = document.getElementById('countdown');
+      const countdownText = document.getElementById('countdownText');
+      const startBtn = document.getElementById('startGameBtn');
+      
+      countdown.style.display = 'block';
+      startBtn.style.display = 'none';
+      
+      let timeLeft = 5;
+      countdownText.textContent = timeLeft;
+      
+      const timer = setInterval(() => {
+        timeLeft--;
+        countdownText.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          closeAdModal();
+          setTimeout(() => {
+            if (!isSpinning) {
+              spin();
+            }
+          }, 300);
+        }
+      }, 1000);
     }
 
     // 슬롯 돌리기
@@ -329,7 +441,7 @@
     }
 
     // 이벤트 리스너
-    lever.addEventListener('click', spin);
+    lever.addEventListener('click', showAdModal);
     closeBtn.addEventListener('click', closeModal);
     resultModal.addEventListener('click', (e) => {
       if (e.target === resultModal) closeModal();

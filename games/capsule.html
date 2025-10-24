@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>럭키빤쓰 - 캡슐뽑기</title>
   <link rel="stylesheet" href="../assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/ad-modal.css">
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
+       crossorigin="anonymous"></script>
   <style>
     .capsule-machine {
       position: relative;
@@ -166,6 +171,44 @@
     </div>
   </div>
 
+  <!-- 광고 모달 -->
+  <div class="ad-modal" id="adModal">
+    <div class="ad-modal-content">
+      <button class="ad-modal-close" onclick="closeAdModalAndSpin()">&times;</button>
+      
+      <div class="ad-modal-header">
+        <div class="ad-modal-title">🎯 특별 이벤트!</div>
+        <div class="ad-modal-subtitle">럭키빤쓰 프리미엄 서비스를 확인해보세요</div>
+      </div>
+      
+      <div class="ad-modal-body">
+        <div class="ad-modal-ad">
+          <!-- Google AdSense 광고 -->
+          <ins class="adsbygoogle"
+               style="display:block;width:300px;height:250px;"
+               data-ad-client="ca-pub-8451876651536601"
+               data-ad-slot="5939741579"></ins>
+          <div class="ad-modal-ad-placeholder" style="display:none;">
+            광고 로딩 중...
+          </div>
+        </div>
+        
+        <div class="ad-modal-countdown" id="countdown" style="display:none;">
+          <span id="countdownText">5</span>초 후 게임 시작
+        </div>
+      </div>
+      
+      <div class="ad-modal-footer">
+        <button class="ad-modal-btn ad-modal-btn-primary" onclick="startGame()" id="startGameBtn">
+          게임 시작하기
+        </button>
+        <button class="ad-modal-btn ad-modal-btn-secondary" onclick="skipAd()">
+          광고 건너뛰기
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const prizes = [
       { name: '1등: 10,000원 상품권', emoji: '💎' },
@@ -177,6 +220,7 @@
     ];
 
     let hasSelected = false;
+    let selectedCapsule = null;
     const capsules = document.querySelectorAll('.capsule');
     const resultModal = document.getElementById('resultModal');
     const prizeText = document.getElementById('prizeText');
@@ -187,12 +231,11 @@
       capsule.addEventListener('click', function() {
         if (hasSelected || this.classList.contains('opened')) return;
         
-        hasSelected = true;
-        this.classList.add('opening');
+        // 광고 모달 표시
+        showAdModal();
         
-        // 선택한 캡슐의 경품 (랜덤)
-        const prizeIndex = Math.floor(Math.random() * prizes.length);
-        const prize = prizes[prizeIndex];
+        // 선택한 캡슐 저장
+        selectedCapsule = this;
         
         setTimeout(() => {
           // 캡슐 열기 애니메이션
