@@ -378,15 +378,24 @@
           const finalSymbol = symbols[Math.floor(Math.random() * symbols.length)];
           results.push(finalSymbol);
           
-          // 최종 위치로 스냅
+          // 최종 위치로 스냅 (가시 영역의 중앙에 위치)
           const symbolHeight = 120;
-          const finalPosition = Math.floor(distance / symbolHeight) * symbolHeight;
+          const visibleIndex = 1; // 가시 영역의 중앙 (0, 1, 2 중 1번째)
+          const finalPosition = visibleIndex * symbolHeight;
           reel.style.transform = `translateY(-${finalPosition}px)`;
           
-          // 최종 심볼을 해당 위치에 배치
-          const finalIndex = Math.floor(finalPosition / symbolHeight);
-          if (reel.children[finalIndex]) {
-            reel.children[finalIndex].textContent = finalSymbol;
+          // 가시 영역의 중앙 심볼을 최종 결과로 설정
+          if (reel.children[visibleIndex]) {
+            reel.children[visibleIndex].textContent = finalSymbol;
+          }
+          
+          // 릴의 모든 심볼을 최종 결과로 업데이트 (시각적 일관성)
+          for (let j = 0; j < reel.children.length; j++) {
+            if (j === visibleIndex) {
+              reel.children[j].textContent = finalSymbol;
+            } else {
+              reel.children[j].textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            }
           }
           
           if (i === 3) {
