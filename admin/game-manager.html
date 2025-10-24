@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>럭키빤쓰 - 게임 관리</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <style>
+    .manager-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .manager-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .manager-header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .game-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .game-tab {
+      padding: 12px 25px;
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .game-tab.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .game-tab:hover {
+      border-color: var(--primary-color);
+    }
+
+    .settings-section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .settings-section h3 {
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      font-size: 1.3em;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .prize-list {
+      display: grid;
+      gap: 15px;
+    }
+
+    .prize-item {
+      display: grid;
+      grid-template-columns: 1fr 100px 100px 80px;
+      gap: 15px;
+      align-items: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .prize-item:hover {
+      border-color: var(--primary-color);
+    }
+
+    .prize-item input {
+      margin: 0;
+    }
+
+    .add-prize-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .add-prize-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    .save-btn {
+      background: linear-gradient(135deg, #4CAF50, #45a049);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .back-link {
+      display: inline-block;
+      background: #6c757d;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .back-link:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .prize-item {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .game-selector {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="manager-container">
+    <a href="index.html" class="back-link">← 관리자 대시보드</a>
+    
+    <div class="manager-header">
+      <h1 id="gameTitle">게임 관리</h1>
+      <p>게임 설정을 관리하고 조정하세요</p>
+    </div>
+
+    <!-- 게임 선택 탭 -->
+    <div class="game-selector">
+      <div class="game-tab active" onclick="switchGame('roulette')">🎡 룰렛</div>
+      <div class="game-tab" onclick="switchGame('slot')">🎰 슬롯머신</div>
+      <div class="game-tab" onclick="switchGame('capsule')">🎁 캡슐뽑기</div>
+      <div class="game-tab" onclick="switchGame('scratch')">🎫 스크래치</div>
+    </div>
+
+    <!-- 룰렛 설정 -->
+    <div id="roulette-settings" class="game-settings">
+      <div class="settings-section">
+        <h3>🎡 룰렛 기본 설정</h3>
+        <div class="form-group">
+          <label for="roulette-attempts">남은 기회 횟수</label>
+          <input type="number" id="roulette-attempts" value="3" min="1" max="10">
+        </div>
+        <div class="form-group">
+          <label for="roulette-spin-duration">회전 시간 (초)</label>
+          <input type="number" id="roulette-spin-duration" value="4" min="2" max="10" step="0.5">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>🎁 경품 설정</h3>
+        <div class="prize-list" id="roulette-prizes">
+          <div class="prize-item">
+            <input type="text" placeholder="경품명" value="1등: 스타벅스 기프티콘">
+            <input type="number" placeholder="확률%" value="5" min="0" max="100">
+            <input type="text" placeholder="색상" value="#ff6b6b">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+          <div class="prize-item">
+            <input type="text" placeholder="경품명" value="2등: 5,000 포인트">
+            <input type="number" placeholder="확률%" value="10" min="0" max="100">
+            <input type="text" placeholder="색상" value="#4ecdc4">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+          <div class="prize-item">
+            <input type="text" placeholder="경품명" value="3등: 3,000 포인트">
+            <input type="number" placeholder="확률%" value="15" min="0" max="100">
+            <input type="text" placeholder="색상" value="#45b7d1">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+          <div class="prize-item">
+            <input type="text" placeholder="경품명" value="꽝: 다음 기회에">
+            <input type="number" placeholder="확률%" value="70" min="0" max="100">
+            <input type="text" placeholder="색상" value="#95a5a6">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+        </div>
+        <button class="add-prize-btn" onclick="addPrize('roulette')">+ 경품 추가</button>
+      </div>
+    </div>
+
+    <!-- 슬롯머신 설정 -->
+    <div id="slot-settings" class="game-settings" style="display: none;">
+      <div class="settings-section">
+        <h3>🎰 슬롯머신 기본 설정</h3>
+        <div class="form-group">
+          <label for="slot-symbols">심볼 종류 (쉼표로 구분)</label>
+          <input type="text" id="slot-symbols" value="🍒,🍋,🍊,⭐,🍇,🍉,💎,🎰">
+        </div>
+        <div class="form-group">
+          <label for="slot-spin-duration">회전 시간 (초)</label>
+          <input type="number" id="slot-spin-duration" value="3" min="1" max="10" step="0.5">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>🎁 당첨 조합 설정</h3>
+        <div class="prize-list" id="slot-prizes">
+          <div class="prize-item">
+            <input type="text" placeholder="조합 (예: 🍒🍒🍒)" value="💎💎💎">
+            <input type="text" placeholder="보상" value="JACKPOT! 10,000 포인트">
+            <input type="number" placeholder="확률%" value="1" min="0" max="100">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+          <div class="prize-item">
+            <input type="text" placeholder="조합 (예: 🍒🍒🍒)" value="🍒🍒🍒">
+            <input type="text" placeholder="보상" value="5,000 포인트">
+            <input type="number" placeholder="확률%" value="5" min="0" max="100">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+        </div>
+        <button class="add-prize-btn" onclick="addPrize('slot')">+ 조합 추가</button>
+      </div>
+    </div>
+
+    <!-- 캡슐뽑기 설정 -->
+    <div id="capsule-settings" class="game-settings" style="display: none;">
+      <div class="settings-section">
+        <h3>🎁 캡슐뽑기 기본 설정</h3>
+        <div class="form-group">
+          <label for="capsule-count">캡슐 개수</label>
+          <input type="number" id="capsule-count" value="6" min="3" max="12">
+        </div>
+        <div class="form-group">
+          <label for="capsule-animation">애니메이션 시간 (초)</label>
+          <input type="number" id="capsule-animation" value="2" min="1" max="5" step="0.5">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>🎁 경품 설정</h3>
+        <div class="prize-list" id="capsule-prizes">
+          <div class="prize-item">
+            <input type="text" placeholder="경품명" value="1등: 10,000원 상품권">
+            <input type="text" placeholder="이모지" value="💎">
+            <input type="number" placeholder="확률%" value="5" min="0" max="100">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+          <div class="prize-item">
+            <input type="text" placeholder="경품명" value="2등: 5,000원 상품권">
+            <input type="text" placeholder="이모지" value="🎁">
+            <input type="number" placeholder="확률%" value="10" min="0" max="100">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+        </div>
+        <button class="add-prize-btn" onclick="addPrize('capsule')">+ 경품 추가</button>
+      </div>
+    </div>
+
+    <!-- 스크래치 설정 -->
+    <div id="scratch-settings" class="game-settings" style="display: none;">
+      <div class="settings-section">
+        <h3>🎫 스크래치 기본 설정</h3>
+        <div class="form-group">
+          <label for="scratch-reveal-percent">자동 완료 퍼센트</label>
+          <input type="number" id="scratch-reveal-percent" value="70" min="50" max="90">
+        </div>
+        <div class="form-group">
+          <label for="scratch-ad-trigger">광고 표시 퍼센트</label>
+          <input type="number" id="scratch-ad-trigger" value="30" min="10" max="50">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>🎁 경품 설정</h3>
+        <div class="prize-list" id="scratch-prizes">
+          <div class="prize-item">
+            <input type="text" placeholder="경품명" value="대박! 50,000원 상품권">
+            <input type="text" placeholder="이모지" value="💎">
+            <input type="number" placeholder="확률%" value="1" min="0" max="100">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+          <div class="prize-item">
+            <input type="text" placeholder="경품명" value="축하! 10,000원 상품권">
+            <input type="text" placeholder="이모지" value="🎁">
+            <input type="number" placeholder="확률%" value="5" min="0" max="100">
+            <button onclick="removePrize(this)">삭제</button>
+          </div>
+        </div>
+        <button class="add-prize-btn" onclick="addPrize('scratch')">+ 경품 추가</button>
+      </div>
+    </div>
+
+    <button class="save-btn" onclick="saveSettings()">💾 설정 저장</button>
+  </div>
+
+  <script>
+    let currentGame = 'roulette';
+
+    // 게임 전환
+    function switchGame(gameType) {
+      currentGame = gameType;
+      
+      // 탭 활성화
+      document.querySelectorAll('.game-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // 설정 섹션 전환
+      document.querySelectorAll('.game-settings').forEach(section => {
+        section.style.display = 'none';
+      });
+      document.getElementById(gameType + '-settings').style.display = 'block';
+
+      // 제목 업데이트
+      const titles = {
+        'roulette': '🎡 룰렛 관리',
+        'slot': '🎰 슬롯머신 관리',
+        'capsule': '🎁 캡슐뽑기 관리',
+        'scratch': '🎫 스크래치 관리'
+      };
+      document.getElementById('gameTitle').textContent = titles[gameType];
+    }
+
+    // 경품 추가
+    function addPrize(gameType) {
+      const prizeList = document.getElementById(gameType + '-prizes');
+      const newPrize = document.createElement('div');
+      newPrize.className = 'prize-item';
+      
+      if (gameType === 'roulette') {
+        newPrize.innerHTML = `
+          <input type="text" placeholder="경품명" value="">
+          <input type="number" placeholder="확률%" value="10" min="0" max="100">
+          <input type="text" placeholder="색상" value="#95a5a6">
+          <button onclick="removePrize(this)">삭제</button>
+        `;
+      } else if (gameType === 'slot') {
+        newPrize.innerHTML = `
+          <input type="text" placeholder="조합 (예: 🍒🍒🍒)" value="">
+          <input type="text" placeholder="보상" value="">
+          <input type="number" placeholder="확률%" value="5" min="0" max="100">
+          <button onclick="removePrize(this)">삭제</button>
+        `;
+      } else if (gameType === 'capsule') {
+        newPrize.innerHTML = `
+          <input type="text" placeholder="경품명" value="">
+          <input type="text" placeholder="이모지" value="🎁">
+          <input type="number" placeholder="확률%" value="10" min="0" max="100">
+          <button onclick="removePrize(this)">삭제</button>
+        `;
+      } else if (gameType === 'scratch') {
+        newPrize.innerHTML = `
+          <input type="text" placeholder="경품명" value="">
+          <input type="text" placeholder="이모지" value="🎁">
+          <input type="number" placeholder="확률%" value="10" min="0" max="100">
+          <button onclick="removePrize(this)">삭제</button>
+        `;
+      }
+      
+      prizeList.appendChild(newPrize);
+    }
+
+    // 경품 삭제
+    function removePrize(button) {
+      button.parentElement.remove();
+    }
+
+    // 설정 저장
+    function saveSettings() {
+      const settings = {
+        game: currentGame,
+        timestamp: new Date().toISOString()
+      };
+
+      // 게임별 설정 수집
+      if (currentGame === 'roulette') {
+        settings.attempts = document.getElementById('roulette-attempts').value;
+        settings.spinDuration = document.getElementById('roulette-spin-duration').value;
+        settings.prizes = collectPrizes('roulette');
+      } else if (currentGame === 'slot') {
+        settings.symbols = document.getElementById('slot-symbols').value;
+        settings.spinDuration = document.getElementById('slot-spin-duration').value;
+        settings.combinations = collectPrizes('slot');
+      } else if (currentGame === 'capsule') {
+        settings.capsuleCount = document.getElementById('capsule-count').value;
+        settings.animationDuration = document.getElementById('capsule-animation').value;
+        settings.prizes = collectPrizes('capsule');
+      } else if (currentGame === 'scratch') {
+        settings.revealPercent = document.getElementById('scratch-reveal-percent').value;
+        settings.adTrigger = document.getElementById('scratch-ad-trigger').value;
+        settings.prizes = collectPrizes('scratch');
+      }
+
+      // 로컬스토리지에 저장 (실제로는 서버에 전송)
+      localStorage.setItem(`gameSettings_${currentGame}`, JSON.stringify(settings));
+      
+      alert(`${currentGame} 설정이 저장되었습니다!`);
+      console.log('저장된 설정:', settings);
+    }
+
+    // 경품 데이터 수집
+    function collectPrizes(gameType) {
+      const prizeList = document.getElementById(gameType + '-prizes');
+      const prizes = [];
+      
+      prizeList.querySelectorAll('.prize-item').forEach(item => {
+        const inputs = item.querySelectorAll('input');
+        if (inputs.length >= 3) {
+          const prize = {
+            name: inputs[0].value,
+            probability: parseInt(inputs[inputs.length - 2].value) || 0
+          };
+          
+          if (gameType === 'roulette') {
+            prize.color = inputs[2].value;
+          } else if (gameType === 'slot') {
+            prize.reward = inputs[1].value;
+          } else {
+            prize.emoji = inputs[1].value;
+          }
+          
+          prizes.push(prize);
+        }
+      });
+      
+      return prizes;
+    }
+
+    // URL 파라미터로 게임 타입 설정
+    window.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const game = urlParams.get('game');
+      if (game && ['roulette', 'slot', 'capsule', 'scratch'].includes(game)) {
+        switchGame(game);
+      }
+    });
+  </script>
+</body>
+</html>
