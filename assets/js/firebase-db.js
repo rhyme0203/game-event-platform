@@ -23,7 +23,7 @@ class FirebaseDB {
         await this.loadFirebaseSDK();
       }
       
-      // Firebase 초기화
+      // Firebase 초기화 (v8 방식)
       if (!firebase.apps.length) {
         firebase.initializeApp(this.config);
       }
@@ -38,14 +38,15 @@ class FirebaseDB {
     }
   }
   
-  // Firebase SDK 동적 로드
+  // Firebase SDK 동적 로드 (CDN 방식)
   async loadFirebaseSDK() {
     return new Promise((resolve, reject) => {
+      // Firebase v8 CDN 사용 (ES6 모듈 문제 해결)
       const script = document.createElement('script');
-      script.src = 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+      script.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
       script.onload = () => {
         const script2 = document.createElement('script');
-        script2.src = 'https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js';
+        script2.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js';
         script2.onload = resolve;
         script2.onerror = reject;
         document.head.appendChild(script2);
