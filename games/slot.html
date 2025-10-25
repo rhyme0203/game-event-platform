@@ -310,6 +310,16 @@
       console.log('광고 모달 표시');
       const modal = document.getElementById('adModal');
       modal.classList.add('show');
+      
+      // 광고 초기화
+      setTimeout(() => {
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+          console.log('광고 초기화 완료');
+        } catch (error) {
+          console.log('광고 초기화 실패:', error);
+        }
+      }, 100);
     }
     
     // 광고 모달 닫기
