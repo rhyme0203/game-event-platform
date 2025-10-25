@@ -1,10 +1,11 @@
-// Firebase Storage 기반 데이터베이스
+// Firebase Realtime Database 기반 데이터베이스
 class FirebaseDB {
   constructor() {
     this.isInitialized = false;
     this.config = {
       apiKey: "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
       authDomain: "game-event-platform.firebaseapp.com",
+      databaseURL: "https://lucky-784fd-default-rtdb.asia-southeast1.firebasedatabase.app/",
       projectId: "game-event-platform",
       storageBucket: "game-event-platform.appspot.com",
       messagingSenderId: "123456789012",
@@ -27,11 +28,10 @@ class FirebaseDB {
         firebase.initializeApp(this.config);
       }
       
-      this.db = firebase.firestore();
-      this.storage = firebase.storage();
+      this.db = firebase.database();
       this.isInitialized = true;
       
-      console.log('Firebase 초기화 완료');
+      console.log('Firebase Realtime Database 초기화 완료');
     } catch (error) {
       console.error('Firebase 초기화 실패:', error);
       this.isInitialized = false;
@@ -45,14 +45,8 @@ class FirebaseDB {
       script.src = 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
       script.onload = () => {
         const script2 = document.createElement('script');
-        script2.src = 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
-        script2.onload = () => {
-          const script3 = document.createElement('script');
-          script3.src = 'https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js';
-          script3.onload = resolve;
-          script3.onerror = reject;
-          document.head.appendChild(script3);
-        };
+        script2.src = 'https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js';
+        script2.onload = resolve;
         script2.onerror = reject;
         document.head.appendChild(script2);
       };
@@ -74,11 +68,11 @@ class FirebaseDB {
         user_agent: navigator.userAgent,
         phone_number: null,
         email: null,
-        created_at: firebase.firestore.FieldValue.serverTimestamp(),
-        last_active: firebase.firestore.FieldValue.serverTimestamp()
+        created_at: firebase.database.ServerValue.TIMESTAMP,
+        last_active: firebase.database.ServerValue.TIMESTAMP
       };
       
-      await this.db.collection('users').doc(userId).set(userData, { merge: true });
+      await this.db.ref(`users/${userId}`).set(userData);
       console.log('Firebase 사용자 등록 완료:', userId);
       
       return { success: true, data: { id: userId, ...userData } };
@@ -95,10 +89,10 @@ class FirebaseDB {
     }
     
     try {
-      const doc = await this.db.collection('games').doc(gameType).get();
+      const snapshot = await this.db.ref(`games/${gameType}`).once('value');
       
-      if (doc.exists) {
-        const data = doc.data();
+      if (snapshot.exists()) {
+        const data = snapshot.val();
         console.log(`${gameType} 게임 설정 로드됨:`, data);
         return data;
       } else {
@@ -122,10 +116,10 @@ class FirebaseDB {
     try {
       const gameData = {
         ...settings,
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        lastUpdated: firebase.database.ServerValue.TIMESTAMP
       };
       
-      await this.db.collection('games').doc(gameType).set(gameData, { merge: true });
+      await this.db.ref(`games/${gameType}`).set(gameData);
       console.log(`${gameType} 게임 설정 저장됨:`, gameData);
       
       // 설정 변경 이벤트 발생
@@ -155,10 +149,10 @@ class FirebaseDB {
         user_id: userId,
         game_type: gameType,
         result: result,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        timestamp: firebase.database.ServerValue.TIMESTAMP
       };
       
-      await this.db.collection('game_plays').add(playData);
+      await this.db.ref('game_plays').push(playData);
       console.log('게임 플레이 기록됨:', playData);
       
       return { success: true };
@@ -175,26 +169,31 @@ class FirebaseDB {
     }
     
     try {
-      const snapshot = await this.db.collection('game_plays').get();
+      const snapshot = await this.db.ref('game_plays').once('value');
       const statistics = {
-        total_plays: snapshot.size,
+        total_plays: 0,
         games: {}
       };
       
-      // 게임별 통계 계산
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const gameType = data.game_type;
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const plays = Object.values(data);
+        statistics.total_plays = plays.length;
         
-        if (!statistics.games[gameType]) {
-          statistics.games[gameType] = { plays: 0, wins: 0 };
-        }
-        
-        statistics.games[gameType].plays++;
-        if (data.result && data.result.won) {
-          statistics.games[gameType].wins++;
-        }
-      });
+        // 게임별 통계 계산
+        plays.forEach(play => {
+          const gameType = play.game_type;
+          
+          if (!statistics.games[gameType]) {
+            statistics.games[gameType] = { plays: 0, wins: 0 };
+          }
+          
+          statistics.games[gameType].plays++;
+          if (play.result && play.result.won) {
+            statistics.games[gameType].wins++;
+          }
+        });
+      }
       
       console.log('통계 로드됨:', statistics);
       return statistics;
@@ -211,9 +210,9 @@ class FirebaseDB {
       return;
     }
     
-    this.db.collection('games').doc(gameType).onSnapshot((doc) => {
-      if (doc.exists) {
-        const data = doc.data();
+    this.db.ref(`games/${gameType}`).on('value', (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
         console.log('실시간 설정 변경 감지:', data);
         if (callback) {
           callback(data);

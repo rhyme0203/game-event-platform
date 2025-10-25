@@ -1,9 +1,10 @@
-// Firebase 설정 파일
+// Firebase Realtime Database 설정 파일
 // Firebase 콘솔에서 받은 실제 설정으로 교체하세요
 
 const firebaseConfig = {
   apiKey: "여기에_실제_apiKey_입력",
   authDomain: "여기에_실제_authDomain_입력",
+  databaseURL: "https://lucky-784fd-default-rtdb.asia-southeast1.firebasedatabase.app/",
   projectId: "여기에_실제_projectId_입력",
   storageBucket: "여기에_실제_storageBucket_입력",
   messagingSenderId: "여기에_실제_messagingSenderId_입력",
