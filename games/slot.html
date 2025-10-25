@@ -9,25 +9,7 @@
   <link rel="stylesheet" href="../assets/css/ad-modal.css">
   <link rel="stylesheet" href="../assets/css/point-system.css">
   
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601"
-       crossorigin="anonymous"></script>
-  
-  <!-- AdSense 코드 스니펫 -->
-  <script>
-    // AdSense 초기화 대기
-    window.addEventListener('load', function() {
-      try {
-        (adsbygoogle = window.adsbygoogle || []).push({
-          google_ad_client: "ca-pub-8451876651536601",
-          enable_page_level_ads: true
-        });
-        console.log('AdSense 초기화 완료');
-      } catch (error) {
-        console.log('AdSense 초기화 실패:', error);
-      }
-    });
-  </script>
+  <!-- AdSense는 모달 표시 후 동적으로 로드 -->
   <style>
     .slot-machine {
       background: linear-gradient(145deg, #2c3e50, #34495e);
@@ -323,6 +305,46 @@
       console.log('광고 모달 표시');
       const modal = document.getElementById('adModal');
       modal.classList.add('show');
+      
+      // 모달 표시 후 AdSense 스크립트 동적 로드
+      loadAdSenseScript();
+    }
+    
+    // AdSense 스크립트 동적 로드
+    function loadAdSenseScript() {
+      // 이미 로드되었는지 확인
+      if (document.querySelector('script[src*="adsbygoogle.js"]')) {
+        console.log('AdSense 스크립트 이미 로드됨');
+        return;
+      }
+      
+      console.log('AdSense 스크립트 동적 로드 시작');
+      
+      // AdSense 스크립트 동적 생성
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8451876651536601';
+      script.crossOrigin = 'anonymous';
+      
+      script.onload = function() {
+        console.log('AdSense 스크립트 로드 완료');
+        // AdSense 초기화
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-8451876651536601",
+            enable_page_level_ads: true
+          });
+          console.log('AdSense 초기화 완료');
+        } catch (error) {
+          console.log('AdSense 초기화 실패:', error);
+        }
+      };
+      
+      script.onerror = function() {
+        console.log('AdSense 스크립트 로드 실패 (광고 블록됨)');
+      };
+      
+      document.head.appendChild(script);
     }
     
     // 광고 모달 닫기
