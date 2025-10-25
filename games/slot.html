@@ -305,6 +305,8 @@
           symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
           reel.appendChild(symbol);
         }
+        // 초기 위치를 중앙으로 설정 (140px)
+        reel.style.transform = 'translateY(-140px)';
       }
     }
 
