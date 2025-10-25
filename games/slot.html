@@ -412,9 +412,7 @@
           results.push(finalSymbol);
           
           // 최종 위치로 스냅 (가시 영역의 중앙에 위치)
-          const symbolHeight = 120;
-          const visibleIndex = 1; // 가시 영역의 중앙 (0, 1, 2 중 1번째)
-          const finalPosition = visibleIndex * symbolHeight;
+          const finalPosition = 140; // -140px로 중앙 정렬
           reel.style.transform = `translateY(-${finalPosition}px)`;
           
           // 가시 영역의 중앙 심볼을 최종 결과로 설정
