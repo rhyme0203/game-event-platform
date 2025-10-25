@@ -353,8 +353,8 @@
   </div>
 
   <!-- 데이터베이스 및 API 스크립트 -->
-  <!-- SQL API 스크립트 -->
-  <script src="../assets/js/sql-api.js"></script>
+  <!-- Firebase DB 스크립트 -->
+  <script src="../assets/js/firebase-db.js"></script>
   
   <script>
     let currentGame = 'roulette';
@@ -446,11 +446,11 @@
       try {
         console.log('게임 설정 로드 시작:', gameType);
         
-        // SQL API 우선 시도
+        // Firebase DB 우선 시도
         let response;
-        if (window.sqlAPI) {
-          console.log('SQL API 사용');
-          response = await window.sqlAPI.getGameSettings(gameType);
+        if (window.firebaseDB && window.firebaseDB.isInitialized) {
+          console.log('Firebase DB 사용');
+          response = await window.firebaseDB.getGameSettings(gameType);
         } else if (window.adminAPI) {
           console.log('로컬스토리지 API 사용');
           response = await window.adminAPI.getGameSettings(gameType);
@@ -578,13 +578,13 @@
           settings.prizes = collectPrizes('scratch');
         }
 
-        // SQL API를 통해 저장
+        // Firebase DB를 통해 저장
         let response;
-        if (window.sqlAPI) {
-          console.log('SQL API로 저장');
-          response = await window.sqlAPI.saveGameSettings(currentGame, settings);
+        if (window.firebaseDB && window.firebaseDB.isInitialized) {
+          console.log('Firebase DB로 저장');
+          response = await window.firebaseDB.saveGameSettings(currentGame, settings);
         } else {
-          throw new Error('SQL API를 사용할 수 없습니다.');
+          throw new Error('Firebase DB를 사용할 수 없습니다.');
         }
         
         if (response.success) {

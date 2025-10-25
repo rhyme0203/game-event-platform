@@ -241,8 +241,8 @@
     </div>
   </div>
 
-  <!-- SQL API 스크립트 -->
-  <script src="../assets/js/sql-api.js"></script>
+  <!-- Firebase DB 스크립트 -->
+  <script src="../assets/js/firebase-db.js"></script>
   <!-- 포인트 시스템 -->
   <script src="../assets/js/point-system.js"></script>
   
@@ -598,27 +598,38 @@
       (adsbygoogle = window.adsbygoogle || []).push({});
     }
 
-    // SQL API 설정 적용
+    // Firebase DB 설정 적용
     window.addEventListener('DOMContentLoaded', async function() {
-      console.log('DOM 로드됨, SQL API 설정 적용 시작');
+      console.log('DOM 로드됨, Firebase DB 설정 적용 시작');
       
       try {
-        // SQL API 존재 확인
-        if (!window.sqlAPI) {
-          throw new Error('SQL API를 사용할 수 없습니다');
+        // Firebase DB 초기화 대기
+        const waitForFirebase = async () => {
+          let attempts = 0;
+          while (!window.firebaseDB?.isInitialized && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          }
+          return window.firebaseDB?.isInitialized;
+        };
+        
+        const isFirebaseReady = await waitForFirebase();
+        
+        if (!isFirebaseReady) {
+          throw new Error('Firebase DB 초기화 실패');
         }
         
         // 사용자 등록
-        await window.sqlAPI.registerUser();
-        console.log('사용자 등록 완료');
+        await window.firebaseDB.registerUser();
+        console.log('Firebase 사용자 등록 완료');
         
-        // SQL API로 직접 게임 설정 로드
-        const rouletteSettings = await window.sqlAPI.getGameSettings('roulette');
+        // Firebase DB로 게임 설정 로드
+        const rouletteSettings = await window.firebaseDB.getGameSettings('roulette');
         console.log('룰렛 설정 로드됨:', rouletteSettings);
         
         if (rouletteSettings && rouletteSettings.prizes) {
           prizes = rouletteSettings.prizes;
-          console.log('SQL API에서 경품 데이터 로드:', prizes);
+          console.log('Firebase DB에서 경품 데이터 로드:', prizes);
         } else {
           console.log('경품 데이터가 없음, 기본 데이터 사용');
           prizes = defaultPrizes;
@@ -626,7 +637,7 @@
         
         if (rouletteSettings && rouletteSettings.attempts) {
           remaining = rouletteSettings.attempts;
-          console.log('SQL API에서 시도 횟수 로드:', remaining);
+          console.log('Firebase DB에서 시도 횟수 로드:', remaining);
           if (remainingText) {
             remainingText.textContent = remaining;
           }
@@ -638,11 +649,27 @@
           }
         }
         
+        // 실시간 설정 감지 시작
+        window.firebaseDB.startSettingsWatcher('roulette', (settings) => {
+          console.log('실시간 설정 변경 감지:', settings);
+          if (settings.prizes) {
+            prizes = settings.prizes;
+            drawWheel();
+          }
+          if (settings.attempts) {
+            remaining = settings.attempts;
+            if (remainingText) {
+              remainingText.textContent = remaining;
+            }
+          }
+        });
+        
         // 데이터 로드 완료 후 UI 표시
         showGameUI();
+        console.log('Firebase DB 게임 설정 로딩 완료');
       } catch (error) {
-        console.error('SQL API 설정 적용 실패:', error);
-        console.log('폴백: 로컬스토리지 방식 사용');
+        console.error('Firebase DB 설정 적용 실패:', error);
+        console.log('폴백: 기본 설정 사용');
         
         // 기본 경품 데이터 사용
         prizes = defaultPrizes;
