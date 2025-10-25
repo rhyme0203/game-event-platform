@@ -313,6 +313,18 @@
     // 광고 모달 표시
     function showAdModal() {
       console.log('광고 모달 표시');
+      
+      // 광고 블록 감지 (AdSense 로드 실패 시 바로 게임 시작)
+      if (typeof adsbygoogle === 'undefined' || !window.adsbygoogle) {
+        console.log('광고 블록 감지됨, 바로 게임 시작');
+        setTimeout(() => {
+          if (!isSpinning) {
+            spin();
+          }
+        }, 500);
+        return;
+      }
+      
       const modal = document.getElementById('adModal');
       modal.classList.add('show');
     }
@@ -416,6 +428,7 @@
           reel.style.transform = `translateY(-${finalPosition}px)`;
           
           // 가시 영역의 중앙 심볼을 최종 결과로 설정
+          const visibleIndex = 1; // 가시 영역의 중앙 (0, 1, 2 중 1번째)
           if (reel.children[visibleIndex]) {
             reel.children[visibleIndex].textContent = finalSymbol;
           }
